@@ -145,7 +145,7 @@
 		return false;
 	}
 	
-	//新建文件夹
+	//新建文件夹 
  	function buildfile(){
 		layer.prompt({title: '新建文件夹'}, function(filename, index){
 				alert(111);
