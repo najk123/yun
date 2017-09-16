@@ -14,7 +14,7 @@
 				style="margin-left: 10px; margin-top: 10px;">
 				<a class="btn btn-default glyphicon glyphicon-share" href="#">分享</a>
 				<a class="btn btn-default glyphicon glyphicon-download-alt" href="#">下载</a>
-				<a class="btn btn-default glyphicon glyphicon-trash" href="#">删除</a>
+				<a class="btn btn-default glyphicon glyphicon-trash" href="#" id="delete" onclick="return deleteall()">删除</a>
 				<a class="btn btn-default" href="#">重命名</a> <a
 					class="btn btn-default" href="#">复制到</a> <a class="btn btn-default"
 					href="#">移动到</a> <a class="btn btn-default" href="#"

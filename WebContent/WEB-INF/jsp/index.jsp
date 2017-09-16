@@ -140,6 +140,18 @@
 		$("#input_file").click();
 		return false;
 	}
+
+	function deleteall(){
+		var $id = $("input:checked");
+		if($id.length < 1){
+			alert("请选择至少一个");
+		}else{
+			alert($id.parent().next().children().text());
+		}
+		return false;
+	}
+
+	
 </script>
 </head>
 
