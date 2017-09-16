@@ -177,7 +177,6 @@
 	//新建文件夹 
  	function buildfile(){
 		layer.prompt({title: '新建文件夹'}, function(filename, index){
-				alert(111);
 			  $.post("file/addDirectory.action",{
 				  "currentPath":currentPath,
 				  "directoryName":filename
