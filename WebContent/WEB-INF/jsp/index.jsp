@@ -19,8 +19,11 @@
 <meta http-equiv="description" content="This is my page">
 <link href="${pageContext.request.contextPath }/css/bootstrap.min.css"
 	rel="stylesheet">
+<link href="${pageContext.request.contextPath }/css/layer.css"
+	rel="stylesheet">
 <script src="${pageContext.request.contextPath }/js/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath }/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath }/js/layer.js"></script>
 <style>
 .content {
 	width: 100%;
@@ -85,6 +88,7 @@
 	$(document).ready(function() {
 		getFiles("\\");
 	});
+
 	function getFiles(path) {
 // 		var oldPath = $("#list").attr("currentPath");
 // 		var newPath = oldPath + "\\" + path;
@@ -141,6 +145,7 @@
 		return false;
 	}
 
+
 	function deleteall(){
 		var $id = $("input:checked");
 		if($id.length < 1){
@@ -149,6 +154,22 @@
 			alert($id.parent().next().children().text());
 		}
 		return false;
+	}
+
+	
+	//新建文件夹 
+ 	function buildfile(){
+		layer.prompt({title: '新建文件夹'}, function(filename, index){
+				alert(111);
+			  $.post("file/addDirectory.action",{
+				  "currentPath":currentPath,
+				  "directoryName":filename
+			  },function(data){
+				  layer.msg('新建文件夹：'+ pass+'成功');
+				  layer.close(index);
+				  getFiles(currentPath);
+			  });
+			});
 	}
 
 	
