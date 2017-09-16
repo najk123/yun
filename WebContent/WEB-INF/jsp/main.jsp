@@ -15,7 +15,7 @@
 				<a class="btn btn-default glyphicon glyphicon-share" href="#">分享</a>
 				<a class="btn btn-default glyphicon glyphicon-download-alt" href="#">下载</a>
 				<a class="btn btn-default glyphicon glyphicon-trash" href="#">删除</a>
-				<a class="btn btn-default" href="#">重命名</a> <a
+				<a class="btn btn-default" href="#" id="main-rename" onclick="return rename()">重命名</a> <a
 					class="btn btn-default" href="#">复制到</a> <a class="btn btn-default"
 					href="#">移动到</a> <a class="btn btn-default" href="#"
 					style="width: 100px;">推送到云设备</a>

@@ -140,6 +140,23 @@
 		$("#input_file").click();
 		return false;
 	}
+	
+	/*
+		重命名文件名
+	*/
+	function rename(){
+		//var check = $("#list input[checked]");
+		//调用
+	    var $check = $("input:checked");
+		if($check.length > 1 || $check.length <= 0){
+			alert("必须选择一个");
+			$check.removeAttr("checked");
+		}else{
+		    alert($check.parent().next().children().text());
+		}
+		return false;	
+	}
+	
 </script>
 </head>
 
