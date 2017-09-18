@@ -172,7 +172,7 @@
 	}
 
 	/*
-		重命名文件名
+	重命名文件名
 	 */
 	function rename() {
 		//var check = $("#list input[checked]");
@@ -182,17 +182,50 @@
 			alert("必须选择一个");
 			$check.removeAttr("checked");
 		} else {
-			alert($check.parent().next().children().text());
+			//alert($check.parent().next().children().text());
+			layer.prompt({
+				title : '重命名'
+			}, function(destName, index) {
+				$.post("file/renameDirectory.action", {
+					"currentPath" : currentPath,
+					"srcName" : $check.parent().next().children().text(),
+					"destName" : destName
+				}, function(data) {
+					if (data.success == true) {
+						layer.msg('重命名成功');
+						layer.close(index);
+						getFiles(currentPath);
+					}
+				});
+			});
 		}
 		return false;
 	}
 
 	function deleteall() {
 		var $id = $("input:checked");
+		var check = new Array();
 		if ($id.length < 1) {
 			alert("请选择至少一个");
 		} else {
-			alert($id.parent().next().children().text());
+			$.each($id.parent().next().children(), function(i, n) {
+				check[i] = $(this).text();
+			})
+			//alert($id.parent().next().children().text());
+
+			$.ajax({
+				type : "POST",
+				url : "file/delDirectory.action",
+				data : {
+					"currentPath" : currentPath,
+					"directoryName" : check
+				},
+				success : function(data) {
+					layer.msg(data.msg);
+					getFiles(currentPath);
+				},
+				traditional : true
+			});
 		}
 		return false;
 	}
@@ -217,7 +250,6 @@
 	}
 </script>
 </head>
-
 <body>
 	<div class="content">
 		<div class="top">
