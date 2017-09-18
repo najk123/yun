@@ -122,7 +122,7 @@
 			var currentPath = $(obj).text();
 			var path = prePath + "\\" + currentPath;
 			getFiles(path);
-			navPath(path, currentPath);
+			navPath(path, currentPath); 
 		}
 		return false;
 	}

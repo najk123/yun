@@ -44,7 +44,7 @@
 					<th colspan="4" width="60%">文件名</th>
 					<th>大小</th>
 					<th>修改时间</th>
-				</tr>
+				</tr> 
 			</thead>
 			<tbody id="list" currentPath="">
 				
