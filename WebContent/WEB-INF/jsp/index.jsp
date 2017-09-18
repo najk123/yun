@@ -113,7 +113,7 @@
 						'<td>' + this.lastTime + '</td></tr>');
 				});
 			}
-		});
+		});  
 	}
 	
 	function preDirectory(obj){
