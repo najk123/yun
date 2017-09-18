@@ -9,7 +9,7 @@
 		<div id="menubutton">
 			<a class="btn btn-default glyphicon glyphicon-folder-open" href="#"
 				role="button"
-				style="margin-left: 10px; margin-top: 10px; width: 100px;" onclick="buildfile()">&nbsp;新建文件夹</a>
+				style="margin-left: 10px; margin-top: 10px; width: 100px;" onclick="return buildfile()">&nbsp;新建文件夹</a>
 			<div class="btn-group" role="group"
 				style="margin-left: 10px; margin-top: 10px;">
 				<a class="btn btn-default glyphicon glyphicon-share" href="#">分享</a>
@@ -45,6 +45,7 @@
 					<th>大小</th>
 					<th>修改时间</th>
 				</tr>
+				
 			</thead>
 			<tbody id="list" currentPath="">
 				
