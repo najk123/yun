@@ -37,7 +37,7 @@
 			</span>
 		</div>
 
-		<table class="table table-hover" id="mytable">
+		<table class="table table-hover"  id="mytable">
 			<thead>
 				<tr>
 					<th><input type="checkbox" aria-label="..."></th>

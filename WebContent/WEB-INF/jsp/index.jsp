@@ -89,7 +89,6 @@
 		getFiles("\\");
 	});
 
-
 	function getFiles(path) {
 // 		var oldPath = $("#list").attr("currentPath");
 // 		var newPath = oldPath + "\\" + path;
