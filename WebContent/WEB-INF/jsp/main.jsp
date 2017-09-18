@@ -9,13 +9,13 @@
 		<div id="menubutton">
 			<a class="btn btn-default glyphicon glyphicon-folder-open" href="#"
 				role="button"
-				style="margin-left: 10px; margin-top: 10px; width: 100px;" onclick="buildfile()">&nbsp;新建文件夹</a>
+				style="margin-left: 10px; margin-top: 10px; width: 100px;" onclick="return buildfile()">&nbsp;新建文件夹</a>
 			<div class="btn-group" role="group"
 				style="margin-left: 10px; margin-top: 10px;">
 				<a class="btn btn-default glyphicon glyphicon-share" href="#">分享</a>
 				<a class="btn btn-default glyphicon glyphicon-download-alt" href="#">下载</a>
-				<a class="btn btn-default glyphicon glyphicon-trash" href="#">删除</a>
-				<a class="btn btn-default" href="#">重命名</a> <a
+				<a class="btn btn-default glyphicon glyphicon-trash" href="#" id="delete" onclick="return deleteall()">删除</a>
+				<a class="btn btn-default" href="#" id="main-rename" onclick="return rename()">重命名</a> <a
 					class="btn btn-default" href="#">复制到</a> <a class="btn btn-default"
 					href="#">移动到</a> <a class="btn btn-default" href="#"
 					style="width: 100px;">推送到云设备</a>
@@ -30,7 +30,7 @@
 	</div>
 	<div class="panel panel-default" style="margin-left: 10px; margin-top: 10px">
 		<!-- Default panel contents -->
-		<div class="panel-heading" >
+		<div class="panel-heading" id="pathnav">
 			<a href="index.action" path="">yun盘 ></a>
 			<span id="navPath">
 				
@@ -45,6 +45,7 @@
 					<th>大小</th>
 					<th>修改时间</th>
 				</tr>
+				
 			</thead>
 			<tbody id="list" currentPath="">
 				
