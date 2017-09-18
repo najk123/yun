@@ -87,6 +87,10 @@
 	text-decoration: none;
 }
 </style>
+
+
+21:55:12
+吕良 2017/9/18 21:55:12
 <script type="text/javascript">
 	var currentPath;
 	$(document).ready(function() {
@@ -94,25 +98,49 @@
 	});
 
 	function getFiles(path) {
-		$.post("file/getFiles.action",
-			{
-				"path" : path
-			},
-			function(data) {
-				if (data.success) {
-					currentPath = path;
-					$("#list").empty();
-					$.each(data.data, function() {
-						$("#list").append('<tr><td><input type="checkbox" aria-label="..."></td>'
-										+ '<td width="60%"><a href="#" prePath="' + path + '" isFile="' + this.file + '" onclick="return preDirectory(this)">' + this.fileName + '</a></td>'
-										+ '<td width="32px"><a href="#" class="glyphicon glyphicon-share"' + 'title="分享"></a></td>'
-										+ '<td width="32px"><a href="#"' + 'class="glyphicon glyphicon-download-alt" title="下载"></a></td>'
-										+ '<td width="32px"><a href="#"' + 'class="glyphicon glyphicon-option-horizontal" title="更多"></a></td>'
-										+ '<td>' + this.fileSize + '</td>'
-										+ '<td>' + this.lastTime+ '</td></tr>');
-					});
-				}
-			});
+		// 		var oldPath = $("#list").attr("currentPath");
+		// 		var newPath = oldPath + "\\" + path;
+		$
+				.post(
+						"file/getFiles.action",
+						{
+							"path" : path
+						},
+						function(data) {
+							if (data.success) {
+								currentPath = path;
+								$("#list").empty();
+								// 				$("#list").attr("currentPath", newPath);
+								// 				$("#navPath").append('<a href="#" onclick="return theClick(this)">' + newPath + '</a>');
+								$
+										.each(
+												data.data,
+												function() {
+													$("#list")
+															.append(
+																	'<tr><td><input type="checkbox" aria-label="..."></td>'
+																			+ '<td width="60%"><a href="#" prePath="'
+																			+ path
+																			+ '" isFile="'
+																			+ this.file
+																			+ '" onclick="return preDirectory(this)">'
+																			+ this.fileName
+																			+ '</a></td>'
+																			+ '<td width="32px"><a href="#" class="glyphicon glyphicon-share"' +
+						'title="分享"></a></td>'
+																			+ '<td width="32px"><a href="#"' +
+						'class="glyphicon glyphicon-download-alt" title="下载"></a></td>'
+																			+ '<td width="32px"><a href="#"' +
+						'class="glyphicon glyphicon-option-horizontal" title="更多"></a></td>'
+																			+ '<td>'
+																			+ this.fileSize
+																			+ '</td>'
+																			+ '<td>'
+																			+ this.lastTime
+																			+ '</td></tr>');
+												});
+							}
+						});
 	}
 
 	function preDirectory(obj) {
@@ -146,18 +174,6 @@
 		$("#input_file").click();
 		return false;
 	}
-	
-	//新建文件夹 
- 	function buildfile(){
-		layer.prompt({title: '新建文件夹'}, function(filename, index){
-			  $.post("file/addDirectory.action",{
-				  "currentPath":currentPath,
-				  "directoryName":filename
-			  },function(data){
-				  layer.msg('新建文件夹：'+ pass+'成功');
-				  layer.close(index);
-				  getFiles(currentPath);
-			  });
 
 	/*
 	重命名文件名
@@ -237,6 +253,7 @@
 		return false;
 	}
 </script>
+
 </head>
 <body>
 	<div class="content">
