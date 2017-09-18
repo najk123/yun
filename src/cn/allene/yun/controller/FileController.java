@@ -74,20 +74,32 @@ public class FileController {
 		return result;
 	}
 	@RequestMapping("/addDirectory")
-	public String addDirectory(String currentPath, String directoryName){
-		fileService.addDirectory(request, currentPath, directoryName);
-		return "forward:/file/getFiles.action?path=" + currentPath;
+	public @ResponseBody Result<String> addDirectory(String currentPath, String directoryName){
+		try {
+			fileService.addDirectory(request, currentPath, directoryName);
+			return new Result<>(326, true, "添加成功");
+		} catch (Exception e) {
+			return new Result<>(321, false, "添加失败");
+		}
 	}
 	
 	@RequestMapping("/delDirectory")
-	public String delDirectory(String currentPath, String[] directoryName){
-		fileService.delDirectory(request, currentPath, directoryName);
-		return "forward:/file/getFiles.action?path=" + currentPath;
+	public @ResponseBody Result<String> delDirectory(String currentPath, String[] directoryName){
+		try {
+			fileService.delDirectory(request, currentPath, directoryName);
+			return new Result<>(327, true, "删除成功");
+		} catch (Exception e) {
+			return new Result<>(322, false, "删除失败");
+		}
 	}
 	
 	@RequestMapping("/renameDirectory")
-	public String renameDirectory(String currentPath, String srcName, String destName){
-		fileService.renameDirectory(request, currentPath, srcName, destName);
-		return "forward:/file/getFiles.action?path=" + currentPath;
+	public @ResponseBody Result<String> renameDirectory(String currentPath, String srcName, String destName){
+		try {
+			fileService.renameDirectory(request, currentPath, srcName, destName);
+			return new Result<>(328, true, "重命名成功");
+		} catch (Exception e) {
+			return new Result<>(323, false, "重命名失败");
+		}
 	}
 }
