@@ -82,6 +82,10 @@
 	background: #E3E8EB;
 	cursor: pointer;
 }
+
+#pathnav a, #list a {
+	text-decoration: none;
+}
 </style>
 <script type="text/javascript">
 	var currentPath;
@@ -114,10 +118,9 @@
 				});
 			}
 		});  
-	}
-	
-	function preDirectory(obj){
-		if($(obj).attr("isfile") == "false"){
+
+	function preDirectory(obj) {
+		if ($(obj).attr("isfile") == "false") {
 			var prePath = $(obj).attr("prePath");
 			var currentPath = $(obj).text();
 			var path = prePath + "\\" + currentPath;
@@ -126,21 +129,24 @@
 		}
 		return false;
 	}
-	
+
 	function theClick(obj) {
 		getFiles($(obj).attr("path"));
 		$(obj).nextAll().remove();
 		return false;
 	}
-	
-	function navPath(path, currentPath){
-		$("#navPath").append('<a href="#" path="' + path +'" onclick="return theClick(this)">&nbsp;' + currentPath + '&nbsp;&#62;</a>');
+
+	function navPath(path, currentPath) {
+		$("#navPath").append(
+				'<a href="#" path="' + path
+						+ '" onclick="return theClick(this)">&nbsp;'
+						+ currentPath + '&nbsp;&#62;</a>');
 	}
-	
-	function navClick(obj){
+
+	function navClick(obj) {
 		return false;
 	}
-	function upload(obj){
+	function upload(obj) {
 		$("#input_file").click();
 		return false;
 	}
@@ -176,15 +182,14 @@
 			});
 		}
 	}
-	
 	/*
-		重命名文件名
-	*/
-	function rename(){
+	重命名文件名
+	 */
+	function rename() {
 		//var check = $("#list input[checked]");
 		//调用
-	    var $check = $("input:checked");
-		if($check.length > 1 || $check.length <= 0){
+		var $check = $("input:checked");
+		if ($check.length > 1 || $check.length <= 0) {
 			alert("必须选择一个");
 			$check.removeAttr("checked");
 		}else{
@@ -203,12 +208,10 @@
 				  });
 			});
 		}
-		return false;	
+		return false;
 	}
-	
 
-
-	function deleteall(){
+	function deleteall() {
 		var $id = $("input:checked");
 		var check = new Array();
 		if($id.length < 1){
@@ -236,7 +239,6 @@
 		return false;
 	}
 
-	
 	//新建文件夹 
  	function buildfile(){
 		layer.prompt({title: '新建文件夹'}, function(filename, index){
@@ -249,12 +251,12 @@
 				  getFiles(currentPath);
 			  });
 			});
+		});
+		return false;
 	}
-
-	
 </script>
-</head>
 
+</head>
 <body>
 	<div class="content">
 		<div class="top">
