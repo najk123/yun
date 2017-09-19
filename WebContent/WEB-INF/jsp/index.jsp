@@ -242,6 +242,7 @@
 		return false;
 	}
 	//添加新功能
+	//功能2
 </script>
 
 </head>
