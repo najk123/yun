@@ -118,7 +118,7 @@
 				});
 			}
 		});  
-	}
+
 	function preDirectory(obj) {
 		if ($(obj).attr("isfile") == "false") {
 			var prePath = $(obj).attr("prePath");
@@ -153,21 +153,33 @@
 	/*
 		下载文件
 	*/
-	function downloadFile(obj){
+	function downloadFile(){
 		var $download = $("input:checked");
-		var downPath = "";
+		var $startDownload = new Array();
 		$.each($download.parent().next().children(),function(i,n){
-			downPath += "&downPath=" + $(this).text();
+			$startDownload = $(this).text();
 		});
 		if($download.length <= 0){
 			alert("必须选择一个");
 			$check.removeAttr("checked");
 		}else{
-			var url = "file/download.action";
-			url += ("?currentPath=" + escape(currentPath));
-			url += downPath;
-			$(obj).attr("href", url);
-			return true;
+			layer.prompt({title: '下载'}, function(downPath, index){
+				$.ajax({
+					type:"POST",
+					url:"file/download.action",
+					data:{
+						"currentPath":currentPath,
+						"downPath":downPath
+					},
+					success:function(data){
+						if(data.success == true){
+							layer.msg(data.msg);
+							getFiles(currentPath);
+						}
+					},
+					traditional:true
+				});
+			});
 		}
 	}
 	/*
