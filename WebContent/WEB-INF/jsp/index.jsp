@@ -316,6 +316,10 @@
 		alert(input.files[i].name);
 	}	 */
 	
+	//添加新功能
+	//功能2
+	//其他功能
+	//测试
 </script>
 
 </head>
