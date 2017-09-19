@@ -241,6 +241,7 @@
 		});
 		return false;
 	}
+	//添加新功能
 </script>
 
 </head>
