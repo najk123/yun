@@ -56,8 +56,9 @@ public class FileController {
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			String fileName = new String(downloadFile.getName().getBytes("utf-8"), "iso-8859-1");
 			headers.setContentDispositionFormData("attachment", fileName);
-			return new ResponseEntity<byte[]>(org.apache.commons.io.FileUtils.readFileToByteArray(downloadFile),
-					headers, HttpStatus.CREATED);
+			byte[] fileToByteArray = org.apache.commons.io.FileUtils.readFileToByteArray(downloadFile);
+			fileService.deleteDownPackage(downloadFile);
+			return new ResponseEntity<byte[]>(fileToByteArray, headers, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

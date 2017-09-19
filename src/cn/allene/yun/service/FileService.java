@@ -27,6 +27,11 @@ public class FileService {
 		return getFileName(request, fileName);
 	}
 
+	public void deleteDownPackage(File downloadFile) {
+		if(downloadFile.getName().endsWith(".zip")){
+			downloadFile.delete();
+		}
+	}
 	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames) throws Exception {
 		File downloadFile = null;
 		if (fileNames.length == 1) {
