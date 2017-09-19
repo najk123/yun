@@ -49,10 +49,9 @@ public class FileController {
 	}
 
 	@RequestMapping("/download")
-	public ResponseEntity<byte[]> download(String[] downPath) {
+	public ResponseEntity<byte[]> download(String currentPath, String[] downPath) {
 		try {
-			String downPackage = fileService.downPackage(request, downPath);
-			File downloadFile = new File(downPackage);
+			File downloadFile = fileService.downPackage(request, currentPath, downPath);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			String fileName = new String(downloadFile.getName().getBytes("utf-8"), "iso-8859-1");
