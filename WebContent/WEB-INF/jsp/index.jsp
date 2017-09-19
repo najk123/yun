@@ -144,7 +144,7 @@
 				});
 			}
 		});  
-
+	}
 	function preDirectory(obj) {
 		if ($(obj).attr("isfile") == "false") {
 			var prePath = $(obj).attr("prePath");
