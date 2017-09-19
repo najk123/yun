@@ -171,7 +171,7 @@
 		}
 	}
 	/*
-	重命名文件名
+	重命名文件名 
 	 */
 	function rename() {
 		//var check = $("#list input[checked]");
