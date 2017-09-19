@@ -27,16 +27,26 @@ public class FileService {
 		return getFileName(request, fileName);
 	}
 
-	public String downPackage(HttpServletRequest request, String[] fileNames) throws Exception {
+	public void deleteDownPackage(File downloadFile) {
+		if(downloadFile.getName().endsWith(".zip")){
+			downloadFile.delete();
+		}
+	}
+	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames) throws Exception {
+		File downloadFile = null;
 		if (fileNames.length == 1) {
-			return getFileName(request, fileNames[0]);
+			downloadFile = new File(getFileName(request, currentPath), fileNames[0]);
+			if(downloadFile.isFile()){
+				return downloadFile;
+			}
 		}
 		String[] sourcePath = new String[fileNames.length];
 		for (int i = 0; i < fileNames.length; i++) {
 			sourcePath[i] = getFileName(request, fileNames[i]);
 		}
-		String packageZip = packageZip(sourcePath);
-		return packageZip;
+		String packageZipName = packageZip(sourcePath);
+		downloadFile = new File(packageZipName);
+		return downloadFile;
 	}
 
 	private String packageZip(String[] sourcePath) throws Exception {
@@ -118,6 +128,12 @@ public class FileService {
 	}
 
 	private void delFile(File srcFile) {
+		/*如果是文件，直接删除*/
+		if(!srcFile.isDirectory()){
+			srcFile.delete();
+			return ;
+		}
+		/*如果是文件夹，再遍历*/
 		File[] listFiles = srcFile.listFiles();
 		for (File file : listFiles) {
 			if(file.isDirectory()){
