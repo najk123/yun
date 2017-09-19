@@ -118,7 +118,7 @@
 				});
 			}
 		});  
-	}
+
 	function preDirectory(obj) {
 		if ($(obj).attr("isfile") == "false") {
 			var prePath = $(obj).attr("prePath");
@@ -153,11 +153,11 @@
 	/*
 		下载文件
 	*/
-	function downloadFile(obj){
+	function downloadFile(){
 		var $download = $("input:checked");
-		var downPath = "";
+		var $startDownload = new Array();
 		$.each($download.parent().next().children(),function(i,n){
-			downPath += "&downPath=" + $(this).text();
+			$startDownload = $(this).text();
 		});
 		if($download.length <= 0){
 			alert("必须选择一个");
@@ -241,6 +241,7 @@
 		});
 		return false;
 	}
+	//添加新功能
 </script>
 
 </head>
