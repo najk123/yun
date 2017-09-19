@@ -93,6 +93,7 @@ public class FileController {
 		}
 	}
 	//测试test分支pull requst
+	//测试test分支pull requst2
 	@RequestMapping("/renameDirectory")
 	public @ResponseBody Result<String> renameDirectory(String currentPath, String srcName, String destName){
 		try {
