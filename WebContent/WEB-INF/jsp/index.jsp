@@ -144,6 +144,38 @@
 		$("#input_file").click();
 		return false;
 	}
+	/*
+		下载文件
+	*/
+	function downloadFile(){
+		var $download = $("input:checked");
+		var $startDownload = new Array();
+		$.each($download.parent().next().children(),function(i,n){
+			$startDownload = $(this).text();
+		});
+		if($download.length <= 0){
+			alert("必须选择一个");
+			$check.removeAttr("checked");
+		}else{
+			layer.prompt({title: '下载'}, function(downPath, index){
+				$.ajax({
+					type:"POST",
+					url:"file/download.action",
+					data:{
+						"currentPath":currentPath,
+						"downPath":downPath
+					},
+					success:function(data){
+						if(data.success == true){
+							layer.msg(data.msg);
+							getFiles(currentPath);
+						}
+					},
+					traditional:true
+				});
+			});
+		}
+	}
 	
 	/*
 		重命名文件名
@@ -156,7 +188,20 @@
 			alert("必须选择一个");
 			$check.removeAttr("checked");
 		}else{
-		    alert($check.parent().next().children().text());
+		    //alert($check.parent().next().children().text());
+			layer.prompt({title: '重命名'}, function(destName, index){
+				  $.post("file/renameDirectory.action",{
+					  "currentPath":currentPath,
+					  "srcName":$check.parent().next().children().text(),
+					  "destName":destName
+				  },function(data){
+					  if(data.success == true){
+						  layer.msg('重命名成功');
+						  layer.close(index);
+						  getFiles(currentPath);
+					  }
+				  });
+			});
 		}
 		return false;	
 	}
@@ -165,10 +210,28 @@
 
 	function deleteall(){
 		var $id = $("input:checked");
+		var check = new Array();
 		if($id.length < 1){
 			alert("请选择至少一个");
 		}else{
-			alert($id.parent().next().children().text());
+			$.each($id.parent().next().children(),function(i,n){
+				check[i] = $(this).text();
+			})
+			//alert($id.parent().next().children().text());
+			
+			$.ajax({
+				type:"POST",
+				url:"file/delDirectory.action",
+				data:{
+					"currentPath":currentPath,
+					"directoryName":check
+				},
+				success:function(data){
+					layer.msg(data.msg);
+					getFiles(currentPath);
+				},
+				traditional:true
+			});
 		}
 		return false;
 	}
@@ -181,7 +244,7 @@
 				  "currentPath":currentPath,
 				  "directoryName":filename
 			  },function(data){
-				  layer.msg('新建文件夹：'+ pass+'成功');
+				  layer.msg('新建文件夹'+filename+'成功');
 				  layer.close(index);
 				  getFiles(currentPath);
 			  });

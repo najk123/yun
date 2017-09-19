@@ -49,7 +49,7 @@ public class FileController {
 	}
 
 	@RequestMapping("/download")
-	public ResponseEntity<byte[]> download(String[] downPath) {
+	public ResponseEntity<byte[]> download(String[] downPath){
 		try {
 			String downPackage = fileService.downPackage(request, downPath);
 			File downloadFile = new File(downPackage);
