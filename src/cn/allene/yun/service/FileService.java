@@ -123,6 +123,12 @@ public class FileService {
 	}
 
 	private void delFile(File srcFile) {
+		/*如果是文件，直接删除*/
+		if(!srcFile.isDirectory()){
+			srcFile.delete();
+			return ;
+		}
+		/*如果是文件夹，再遍历*/
 		File[] listFiles = srcFile.listFiles();
 		for (File file : listFiles) {
 			if(file.isDirectory()){
