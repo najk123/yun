@@ -167,7 +167,7 @@
 			url += ("?currentPath=" + escape(currentPath));
 			url += downPath;
 			$(obj).attr("href", url);
-			return true;
+			return true; 
 		}
 	}
 	/*
