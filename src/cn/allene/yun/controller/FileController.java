@@ -92,7 +92,7 @@ public class FileController {
 			return new Result<>(322, false, "删除失败");
 		}
 	}
-	
+	//测试test分支pull requst
 	@RequestMapping("/renameDirectory")
 	public @ResponseBody Result<String> renameDirectory(String currentPath, String srcName, String destName){
 		try {
