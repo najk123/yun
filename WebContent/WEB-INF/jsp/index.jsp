@@ -163,27 +163,15 @@
 			alert("必须选择一个");
 			$check.removeAttr("checked");
 		}else{
-			layer.prompt({title: '下载'}, function(downPath, index){
-				$.ajax({
-					type:"POST",
-					url:"file/download.action",
-					data:{
-						"currentPath":currentPath,
-						"downPath":downPath
-					},
-					success:function(data){
-						if(data.success == true){
-							layer.msg(data.msg);
-							getFiles(currentPath);
-						}
-					},
-					traditional:true
-				});
-			});
+			var url = "file/download.action";
+			url += ("?currentPath=" + escape(currentPath));
+			url += downPath;
+			$(obj).attr("href", url);
+			return true; 
 		}
 	}
 	/*
-	重命名文件名
+	重命名文件名 
 	 */
 	function rename() {
 		//var check = $("#list input[checked]");
