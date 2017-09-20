@@ -16,7 +16,7 @@
 		insert into user(username, password) values(#{username}, #{password})
 	</insert>
 	
-	<update id="reSize" parameterType="java.lang.String">
+	<update id="reSize">
 		update user set countSize = #{formatSize} where username = #{username}
 	</update>
 </mapper>
