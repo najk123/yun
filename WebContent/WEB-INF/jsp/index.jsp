@@ -91,8 +91,30 @@
 	var currentPath;
 	$(document).ready(function() {
 		getFiles("\\");
+		countPercent();
 	});
-
+	//计算容量百分比
+	function countPercent(){
+		var countSize = $("#countSize").text();
+		var totalSize = $("#totalSize").text();
+		var countSizeNum = parseFloat(countSize.substr(0, countSize.length - 2));
+		var totalSizeNum = parseFloat(totalSize.substr(0, totalSize.length - 2));
+		totalSizeNum *= (1024 * 1024 * 1024);
+		if(!isNaN(countSizeNum)){
+			var unit = countSize.substr(countSize.length - 2);
+			if(unit == "KB"){
+				countSizeNum *= 1024;
+			}else if(unit == "MB"){
+				countSizeNum *= (1024 * 1024);
+			}else if(unit == "GB"){
+				countSizeNum *= (1024 * 1024 * 1024);
+			}
+		}else{
+			countSizeNum = 0;
+		}
+		var percent = Math.round(countSizeNum * 100 / totalSizeNum) + "%";
+		$("#sizeprogress").css("width", percent).attr("aria-valuemax", totalSizeNum).text(percent);
+	}
 	function getFiles(path) {
 // 		var oldPath = $("#list").attr("currentPath");
 // 		var newPath = oldPath + "\\" + path;
@@ -118,7 +140,7 @@
 				});
 			}
 		});  
-
+	}
 	function preDirectory(obj) {
 		if ($(obj).attr("isfile") == "false") {
 			var prePath = $(obj).attr("prePath");
@@ -241,6 +263,7 @@
 		});
 		return false;
 	}
+	
 	//添加新功能
 	//功能2
 	//其他功能

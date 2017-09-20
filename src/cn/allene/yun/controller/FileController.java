@@ -31,21 +31,12 @@ public class FileController {
 
 	@RequestMapping("/upload")
 	public @ResponseBody Result<String> upload(@RequestParam("files") MultipartFile[] files, String currentPath) {
-		Result<String> result = null;
-		if (files != null) {
-			for (MultipartFile file : files) {
-				String filePath = fileService.uploadFilePath(request, file.getOriginalFilename());
-				try {
-					file.transferTo(new File(filePath));
-				} catch (Exception e) {
-					e.printStackTrace();
-					result = new Result<String>(301, false, "上传失败");
-					return result;
-				}
+			try {
+				fileService.uploadFilePath(request, files);
+			} catch (Exception e) {
+				return new Result<>(301, false, "上传失败");
 			}
-		}
-		result = new Result<String>(305, true, "上传成功");
-		return result;
+			return new Result<String>(305, true, "上传成功");
 	}
 
 	@RequestMapping("/download")

@@ -5,7 +5,18 @@
 		select * from user where username = #{username} and password = #{password}
 	</select>
 	
+	<select id="findUserByUserName" parameterType="java.lang.String" resultType="cn.allene.yun.pojo.User">
+		select * from user where username = #{username}
+	</select>
+	<select id="getCountSize" parameterType="java.lang.String" resultType="java.lang.String">
+		select countSize from user where username = #{username}
+	</select>
+	
 	<insert id="addUser" parameterType="cn.allene.yun.pojo.User">
 		insert into user(username, password) values(#{username}, #{password})
 	</insert>
+	
+	<update id="reSize" parameterType="java.lang.String">
+		update user set countSize = #{formatSize} where username = #{username}
+	</update>
 </mapper>

@@ -8,5 +8,11 @@ import cn.allene.yun.pojo.User;
 public interface UserDao {
 	User findUser(User user) throws Exception;
 	
-	void addUser(User user) throws Exception; 
+	void addUser(User user) throws Exception;
+
+	void reSize(String userName, String formatSize) throws Exception;
+
+	User findUserByUserName(String username) throws Exception;
+
+	String getCountSize(String username) throws Exception; 
 }

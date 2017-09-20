@@ -1,6 +1,7 @@
 package cn.allene.yun.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,9 +22,11 @@ public class UserController {
 	
 	@RequestMapping("/login")
 	public String login(HttpServletRequest request, User user){
-		boolean isUser = userService.findUser(user);
-		if(isUser){
-			request.getSession().setAttribute(FileService.NAMESPACE, user.getUsername());
+		User exsitUser = userService.findUser(user);
+		if(exsitUser != null){
+			HttpSession session = request.getSession();
+			session.setAttribute(FileService.NAMESPACE, exsitUser.getUsername());
+			session.setAttribute("totalSize", exsitUser.getTotalSize());
 			return "redirect:/index.action";
 		}else{
 			request.setAttribute("msg", "用户名或密码错误");

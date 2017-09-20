@@ -13,30 +13,43 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import cn.allene.yun.dao.UserDao;
 import cn.allene.yun.pojo.FileCustom;
+import cn.allene.yun.pojo.Result;
 import cn.allene.yun.utils.FileUtils;
+import sun.security.util.Length;
+
 @Service
 public class FileService {
 	private static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
 	public static final String NAMESPACE = "username";
-	public static final String[] DEFAULT_DIRECTORY = {"vido","music","source"};
-	
-	public String uploadFilePath(HttpServletRequest request, String fileName) {
-		return getFileName(request, fileName);
+	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source" };
+	@Autowired
+	private UserDao userDao;
+
+	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files) throws Exception {
+		for (MultipartFile file : files) {
+			String filePath = getFileName(request, file.getOriginalFilename());
+			file.transferTo(new File(filePath));
+		}
+		reSize(request);
 	}
 
 	public void deleteDownPackage(File downloadFile) {
-		if(downloadFile.getName().endsWith(".zip")){
+		if (downloadFile.getName().endsWith(".zip")) {
 			downloadFile.delete();
 		}
 	}
+
 	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames) throws Exception {
 		File downloadFile = null;
 		if (fileNames.length == 1) {
 			downloadFile = new File(getFileName(request, currentPath), fileNames[0]);
-			if(downloadFile.isFile()){
+			if (downloadFile.isFile()) {
 				return downloadFile;
 			}
 		}
@@ -89,7 +102,7 @@ public class FileService {
 	}
 
 	public String getFileName(HttpServletRequest request, String fileName) {
-		if(fileName == null){
+		if (fileName == null) {
 			fileName = "";
 		}
 		String username = (String) request.getSession().getAttribute(NAMESPACE);
@@ -103,10 +116,10 @@ public class FileService {
 			FileCustom custom = new FileCustom();
 			custom.setFileName(file.getName());
 			custom.setLastTime(FileUtils.formatTime(file.lastModified()));
-			if(file.isDirectory()){
+			if (file.isDirectory()) {
 				custom.setFileSize("-");
 				custom.setFile(false);
-			}else{
+			} else {
 				custom.setFileSize(FileUtils.getDataSize(file.length()));
 				custom.setFile(true);
 			}
@@ -125,26 +138,27 @@ public class FileService {
 			File srcFile = new File(getFileName(request, currentPath), delName);
 			delFile(srcFile);
 		}
+		reSize(request);
 	}
 
 	private void delFile(File srcFile) {
-		/*如果是文件，直接删除*/
-		if(!srcFile.isDirectory()){
+		/* 如果是文件，直接删除 */
+		if (!srcFile.isDirectory()) {
 			srcFile.delete();
-			return ;
+			return;
 		}
-		/*如果是文件夹，再遍历*/
+		/* 如果是文件夹，再遍历 */
 		File[] listFiles = srcFile.listFiles();
 		for (File file : listFiles) {
-			if(file.isDirectory()){
+			if (file.isDirectory()) {
 				delFile(file);
-			}else{
-				if(file.exists()){
+			} else {
+				if (file.exists()) {
 					file.delete();
 				}
 			}
 		}
-		if(srcFile.exists()){
+		if (srcFile.exists()) {
 			srcFile.delete();
 		}
 	}
@@ -162,6 +176,36 @@ public class FileService {
 		for (String newFileName : DEFAULT_DIRECTORY) {
 			File newFile = new File(file, newFileName);
 			newFile.mkdir();
+		}
+	}
+
+	private long countFileSize(File srcFile) {
+		File[] listFiles = srcFile.listFiles();
+		if (listFiles == null) {
+			return 0;
+		}
+		long count = 0;
+		for (File file : listFiles) {
+			if (file.isDirectory()) {
+				count += countFileSize(file);
+			} else {
+				count += file.length();
+			}
+		}
+		return count;
+	}
+
+	public String countFileSize(HttpServletRequest request) {
+		long countFileSize = countFileSize(new File(getFileName(request, null)));
+		return FileUtils.getDataSize(countFileSize);
+	}
+
+	public void reSize(HttpServletRequest request) {
+		String userName = (String) request.getSession().getAttribute(NAMESPACE);
+		try {
+			userDao.reSize(userName, countFileSize(request));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

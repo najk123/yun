@@ -11,17 +11,14 @@ public class UserService {
 	@Autowired
 	private UserDao userDao;
 
-	public boolean findUser(User user) {
+	public User findUser(User user) {
 		try {
 			User exsitUser = userDao.findUser(user);
-			if(exsitUser == null){
-				return false;
-			}
+			return exsitUser;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-		return true;
 	}
 	
 	public boolean addUser(User user){
@@ -32,5 +29,27 @@ public class UserService {
 			return false;
 		}
 		return true;
+	}
+
+	public User findUser(String username) {
+		User user = null;
+		try {
+			user = userDao.findUserByUserName(username);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return user;
+		}
+		return user;
+	}
+	
+	public String getCountSize(String username){
+		String countSize = null;
+		try {
+			countSize = userDao.getCountSize(username);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return countSize;
+		}
+		return countSize;
 	}
 }
