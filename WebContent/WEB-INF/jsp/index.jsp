@@ -86,6 +86,32 @@
 #pathnav a, #list a {
 	text-decoration: none;
 }
+.file {
+    position: relative;
+    display: inline-block;
+    background: #D0EEFF;
+    border: 1px solid #99D3F5;
+    border-radius: 4px;
+    padding: 4px 12px;
+    overflow: hidden;
+    color: #1E88C7;
+    text-decoration: none;
+    text-indent: 0;
+    line-height: 30px;
+}
+.file input {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+.file:hover {
+    background: #AADFFD;
+    border-color: #78C3F3;
+    color: #004974;
+    text-decoration: none;
+}
 </style>
 <script type="text/javascript">
 	var currentPath;
@@ -264,6 +290,53 @@
 		return false;
 	}
 	
+	//上传文件*upload()
+	function upload(){
+	  var files = document.getElementById("input").files;
+          
+	  if(files.length==0) {  
+	      alert("请选择文件");  
+	      return;  
+	  }
+	    //alert(paths.length);  
+	    //我们遍历每一个文件对象  
+
+	    //loading层
+// 		layer.msg('正在上传中', {
+// 		  icon: 16
+// 		  ,shade: 0.5
+// 		});
+	    var index = layer.load(1, {
+		  shade: [0.75,'#fff'] //0.1透明度的白色背景
+		});
+	    //我们可以预先定义一个FormData对象  
+	    var formData=new FormData();  
+	    for(var i=0;i<files.length;i++) {  
+	        //将每个文件设置一个string类型的名字，放入到formData中，这里类似于setAttribute("",Object)  
+	        formData.append("files",files[i]);  
+	    }
+	    formData.append("currentPath", currentPath);
+	    $.ajax({     
+	         url: 'file/upload.action',  
+	         type: 'POST',  
+	         cache: false,
+	         //这个参数是jquery特有的，不进行序列化，因为我们不是json格式的字符串，而是要传文件  
+	         processData: false,  
+	         //注意这里一定要设置contentType:false，不然会默认为传的是字符串，这样文件就传不过去了  
+	         contentType: false,  
+	         data : formData,
+			success : function(data) {
+				if (data.success == true) {
+// 					alert(data.success);
+					getFiles(currentPath);
+					layer.closeAll('loading');
+				}
+			},
+	    });  
+	}
+	/* for(var i=0; i< files.length; i++){
+		alert(input.files[i].name);
+	}	 */
 	//添加新功能
 	//功能2
 	//其他功能

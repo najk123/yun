@@ -2,9 +2,13 @@
 	<div>
 		<div class="navbar-header"
 			style="margin-left: 10px; margin-top: 10px;">
-			<a class="btn btn-default glyphicon glyphicon-cloud-upload" href="#"
-				style="font-size: 15px; height:40px; width: 100px;" onclick="return upload(this)"
-				>上传</a>
+<!-- 			<img id="ImgSrc" src="" height="10" width="10">
+	 			<a class="btn btn-default glyphicon glyphicon-cloud-upload" href="#"
+				style="font-size: 15px; height:40px; width: 100px;" onclick="return upload(this)">上传</a>
+			 -->
+			 <a href="javascript:;" class="file glyphicon glyphicon-cloud-upload">上传文件
+			    <input type="file" id="input" name="input" onchange="upload()" multiple="multiple" />
+			 </a>
 		</div>
 		<div id="menubutton">
 			<a class="btn btn-default glyphicon glyphicon-folder-open" href="#"
