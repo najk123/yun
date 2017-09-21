@@ -173,6 +173,7 @@
 			if (data.success) {
 				currentPath = path;
 				$("#list").empty();
+				$("#checkAll").prop("checked",false);
 // 				$("#list").attr("currentPath", newPath);
 // 				$("#navPath").append('<a href="#" onclick="return theClick(this)">' + newPath + '</a>');
 				$.each(data.data, function() {
@@ -187,7 +188,8 @@
 						'<td>' + this.fileSize + '</td>' +
 						'<td>' + this.lastTime + '</td></tr>');
 				});
-
+			}
+		});
 	}
   
 	function preDirectory(obj) {
@@ -247,7 +249,7 @@
 	function rename() {
 		//var check = $("#list input[checked]");
 		//调用
-		var $check = $("input:checked");
+		var $check = $("input[name='check_name']:checked");
 		if ($check.length > 1 || $check.length <= 0) {
 			alert("必须选择一个");
 			$check.removeAttr("checked");
@@ -273,7 +275,7 @@
 	/*
 	 删除文件 */
 	function deleteall() {
-		var $id = $("input:checked");
+		var $id = $("input[name='check_name']:checked");
 		var check = new Array();
 		if($id.length < 1){
 			alert("请选择至少一个");
@@ -429,7 +431,15 @@
 				  yes: function(index,layero){
 							var tree = layer.getChildFrame('.chooseup > .path',index);
 							targetdirectorypath = tree.html();
-							
+// 							alert(targetdirectorypath + "---" + currentPath);
+// 								\\music  music
+// 								\music\aaa  music\aaa
+							if(currentPath == ("\\\\" + targetdirectorypath)){
+								layer.msg("不能移动到当前目录");
+								layer.close(index);
+								canmove = "no";
+								return false;
+							}
 							$.each($id.parent().next().children(), function(i, n) {
 								check[i] = $(this).text();
 								var start = currentPath+"\\"+check[i];
