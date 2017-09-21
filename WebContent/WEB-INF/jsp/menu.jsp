@@ -101,7 +101,7 @@
 						<span
 						style="width: 38px;height: 38px;display: inline-block;text-align: center;">
 							<span class="glyphicon glyphicon-trash"></span>
-					</span> <span style="display: inline-block;text-align: left;">回收站</span>
+					</span> <span style="display: inline-block;text-align: left;" onclick="return recycle()">回收站</span>
 				</a>
 				</li>
 

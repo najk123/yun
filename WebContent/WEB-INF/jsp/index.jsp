@@ -341,6 +341,9 @@
 	//功能2
 	//其他功能
 	//测试
+	function  recycle(){
+		
+	}
 </script>
 
 </head>
