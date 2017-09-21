@@ -25,7 +25,7 @@ public class LoignInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object) throws Exception {
 		String url = request.getRequestURI();
-		if (url.indexOf("login.action") >= 0 || url.indexOf("regist.action") >= 0) {
+		if (url.indexOf("login.action") >= 0 || url.indexOf("regist.action") >= 0 || url.indexOf("share.action") >= 0 || url.indexOf("getShareFiles.action") >= 0 || url.indexOf("download.action") >= 0) {
 			return true;
 		}
 

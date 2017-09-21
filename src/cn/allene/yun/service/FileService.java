@@ -25,16 +25,16 @@ import sun.security.util.Length;
 
 @Service
 public class FileService {
-	private static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
+	public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
 	public static final String NAMESPACE = "username";
 	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source" };
 	@Autowired
 	private UserDao userDao;
 
-	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files) throws Exception {
+	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception {
 		for (MultipartFile file : files) {
-			String filePath = getFileName(request, file.getOriginalFilename());
-			file.transferTo(new File(filePath));
+			String filePath = getFileName(request, currentPath);
+			file.transferTo(new File(filePath, file.getOriginalFilename()));
 		}
 		reSize(request);
 	}
@@ -45,17 +45,20 @@ public class FileService {
 		}
 	}
 
-	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames) throws Exception {
+	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) throws Exception {
 		File downloadFile = null;
+		if(currentPath == null){
+			currentPath = "";
+		}
 		if (fileNames.length == 1) {
-			downloadFile = new File(getFileName(request, currentPath), fileNames[0]);
+			downloadFile = new File(getFileName(request, currentPath, username) + fileNames[0]);
 			if (downloadFile.isFile()) {
 				return downloadFile;
 			}
 		}
 		String[] sourcePath = new String[fileNames.length];
 		for (int i = 0; i < fileNames.length; i++) {
-			sourcePath[i] = getFileName(request, fileNames[i]);
+			sourcePath[i] = getFileName(request, fileNames[i], username);
 		}
 		String packageZipName = packageZip(sourcePath);
 		downloadFile = new File(packageZipName);
@@ -109,21 +112,33 @@ public class FileService {
 		return getRootPath(request) + username + File.separator + fileName;
 	}
 
+	public String getFileName(HttpServletRequest request, String fileName, String username){
+		if(username == null){
+			return getFileName(request, fileName);
+		}
+		if (fileName == null) {
+			fileName = "";
+		}
+		return getRootPath(request) + username + File.separator + fileName;
+	}
+	
 	public List<FileCustom> listFile(String realPath) {
 		File[] files = new File(realPath).listFiles();
 		List<FileCustom> lists = new ArrayList<FileCustom>();
-		for (File file : files) {
-			FileCustom custom = new FileCustom();
-			custom.setFileName(file.getName());
-			custom.setLastTime(FileUtils.formatTime(file.lastModified()));
-			if (file.isDirectory()) {
-				custom.setFileSize("-");
-				custom.setFile(false);
-			} else {
-				custom.setFileSize(FileUtils.getDataSize(file.length()));
-				custom.setFile(true);
+		if(files != null){
+			for (File file : files) {
+				FileCustom custom = new FileCustom();
+				custom.setFileName(file.getName());
+				custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+				if (file.isDirectory()) {
+					custom.setFileSize("-");
+					custom.setFile(false);
+				} else {
+					custom.setFileSize(FileUtils.getDataSize(file.length()));
+					custom.setFile(true);
+				}
+				lists.add(custom);
 			}
-			lists.add(custom);
 		}
 		return lists;
 	}

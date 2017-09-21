@@ -1,4 +1,5 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 	String path = request.getContextPath();
 	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -118,7 +119,28 @@
 	$(document).ready(function() {
 		getFiles("\\");
 		countPercent();
+		//全选
+		$("#checkAll").click(function () {
+				$("input[name='check_name']").prop("checked", $(this).prop("checked"));
+// 				$("#operation").toggle();
+				if($(this).prop("checked")){
+					$("#operation").show();
+				}else{
+					$("#operation").hide()
+				}
+		});
+		//显示隐藏操作栏
+		$("#operation").hide()
 	});
+	function selectCheckbox(){
+		$inputs = $("input[name='check_name']");
+		var len = $inputs.filter(":checked").length;
+		$("#checkAll").prop("checked", len == $inputs.length);
+		$("#operation").show();
+		if(len == 0){
+			$("#operation").hide();
+		}
+	}
 	//计算容量百分比
 	function countPercent(){
 		var countSize = $("#countSize").text();
@@ -153,7 +175,7 @@
 // 				$("#list").attr("currentPath", newPath);
 // 				$("#navPath").append('<a href="#" onclick="return theClick(this)">' + newPath + '</a>');
 				$.each(data.data, function() {
-					$("#list").append('<tr><td><input type="checkbox" aria-label="..."></td>' +
+					$("#list").append('<tr><td><input onclick="selectCheckbox()" name="check_name" type="checkbox" aria-label="..."></td>' +
 						'<td width="60%"><a href="#" prePath="' + path +'" isFile="' + this.file +'" onclick="return preDirectory(this)">' + this.fileName + '</a></td>' +
 						'<td width="32px"><a href="#" class="glyphicon glyphicon-share"' +
 						'title="分享"></a></td>' +
@@ -201,21 +223,21 @@
 	/*
 		下载文件
 	*/
-	function downloadFile(){
+	function downloadFile(obj){
 		var $download = $("input:checked");
-		var $startDownload = new Array();
+		var downPath = "";
 		$.each($download.parent().next().children(),function(i,n){
-			$startDownload = $(this).text();
+			downPath += "&downPath=" + $(this).text();
 		});
 		if($download.length <= 0){
 			alert("必须选择一个");
 			$check.removeAttr("checked");
 		}else{
 			var url = "file/download.action";
-			url += ("?currentPath=" + escape(currentPath));
-			url += downPath;
-			$(obj).attr("href", url);
-			return true; 
+			 url += ("?currentPath=" + encodeURI(currentPath));
+			 url += downPath;
+			 $(obj).attr("href", url);
+			 return true;
 		}
 	}
 	/*
@@ -292,20 +314,12 @@
 	
 	//上传文件*upload()
 	function upload(){
-	  var files = document.getElementById("input").files;
-          
-	  if(files.length==0) {  
-	      alert("请选择文件");  
-	      return;  
-	  }
-	    //alert(paths.length);  
-	    //我们遍历每一个文件对象  
-
-	    //loading层
-// 		layer.msg('正在上传中', {
-// 		  icon: 16
-// 		  ,shade: 0.5
-// 		});
+		var files = document.getElementById("input").files;
+		       
+		if(files.length==0) {  
+		    alert("请选择文件");  
+		    return;  
+		}
 	    var index = layer.load(1, {
 		  shade: [0.75,'#fff'] //0.1透明度的白色背景
 		});
@@ -317,23 +331,66 @@
 	    }
 	    formData.append("currentPath", currentPath);
 	    $.ajax({     
-	         url: 'file/upload.action',  
-	         type: 'POST',  
-	         cache: false,
-	         //这个参数是jquery特有的，不进行序列化，因为我们不是json格式的字符串，而是要传文件  
-	         processData: false,  
-	         //注意这里一定要设置contentType:false，不然会默认为传的是字符串，这样文件就传不过去了  
-	         contentType: false,  
-	         data : formData,
+			url: 'file/upload.action',  
+			type: 'POST',  
+			cache: false,
+			//这个参数是jquery特有的，不进行序列化，因为我们不是json格式的字符串，而是要传文件  
+			processData: false,  
+			//注意这里一定要设置contentType:false，不然会默认为传的是字符串，这样文件就传不过去了  
+			contentType: false,  
+			data : formData,
 			success : function(data) {
 				if (data.success == true) {
-// 					alert(data.success);
 					getFiles(currentPath);
 					layer.closeAll('loading');
 				}
 			},
 	    });  
 	}
+	//分享
+	function share(obj){
+		var $check = $("input:checked").not($("#checkAll"));
+		if($check.length < 1){
+			alert("请选择至少一个");
+		}else{
+			var shareFiles = $check.parent().next().children();
+			var shareFile = new Array();
+			for(var i = 0; i < shareFiles.length; i++){
+				shareFile[i] = $(shareFiles[i]).text();
+			}
+			$.ajax({
+				type:"POST",
+				url:"shareFile.action",
+				data:{
+					"currentPath":currentPath,
+					"shareFile":shareFile
+				},
+				traditional:true
+				,success:function(data){
+					var host = window.location.href;
+					host = host.substring(0, host.lastIndexOf("/yun") + 5);
+					var url = host + data.data;
+					layer.open({
+						  title: '分享',
+						  content: '<input id="url" value="' + url + '" class="form-control" readonly="readonly"/>'
+						  ,btn: ['复制到粘贴板', '返回'],
+						  area: ['500px', '200px']
+						  ,yes: function(index, layero){ 
+						    //按钮【按钮一】的回调
+							  $("#url").select();
+							  var successful = document.execCommand('copy');
+							  if(successful){
+								  layer.tips('复制成功', $("#url"), {tips: 3});
+							  }
+						  },end: function(index, layero){ 
+							$("input:checkbox").prop("checked", false);  
+						  } 
+					});
+				}
+			});
+		}
+		return false;
+	} 
 	/* for(var i=0; i< files.length; i++){
 		alert(input.files[i].name);
 	}	 */

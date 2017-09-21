@@ -32,7 +32,7 @@ public class FileController {
 	@RequestMapping("/upload")
 	public @ResponseBody Result<String> upload(@RequestParam("files") MultipartFile[] files, String currentPath) {
 			try {
-				fileService.uploadFilePath(request, files);
+				fileService.uploadFilePath(request, files, currentPath);
 			} catch (Exception e) {
 				return new Result<>(301, false, "上传失败");
 			}
@@ -40,9 +40,10 @@ public class FileController {
 	}
 
 	@RequestMapping("/download")
-	public ResponseEntity<byte[]> download(String currentPath, String[] downPath) {
+	public ResponseEntity<byte[]> download(String currentPath, String[] downPath, String username) {
 		try {
-			File downloadFile = fileService.downPackage(request, currentPath, downPath);
+			String down = request.getParameter("downPath");
+			File downloadFile = fileService.downPackage(request, currentPath, downPath, username);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			String fileName = new String(downloadFile.getName().getBytes("utf-8"), "iso-8859-1");
@@ -59,6 +60,14 @@ public class FileController {
 	@RequestMapping("/getFiles")
 	public @ResponseBody Result<List<FileCustom>> getFiles(String path) {
 		String realPath = fileService.getFileName(request, path);
+		List<FileCustom> listFile = fileService.listFile(realPath);
+		Result<List<FileCustom>> result = new Result<List<FileCustom>>(325, true, "获取成功");
+		result.setData(listFile);
+		return result;
+	}
+	@RequestMapping("/getShareFiles")
+	public @ResponseBody Result<List<FileCustom>> getFiles(String path, String username) {
+		String realPath = fileService.getFileName(request, path, username);
 		List<FileCustom> listFile = fileService.listFile(realPath);
 		Result<List<FileCustom>> result = new Result<List<FileCustom>>(325, true, "获取成功");
 		result.setData(listFile);

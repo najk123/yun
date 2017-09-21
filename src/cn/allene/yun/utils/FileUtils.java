@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -127,5 +128,9 @@ public class FileUtils {
 	
 	public static String formatTime(long time){
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time));
+	}
+	
+	public static String getUrl8(){
+		return UUID.randomUUID().toString().replace("-", "").substring(0, 8);
 	}
 }

@@ -14,6 +14,9 @@ public class FileCustom {
 	public boolean isFile() {
 		return isFile;
 	}
+	public boolean getIsFile() {
+		return isFile;
+	}
 	public void setFile(boolean isFile) {
 		this.isFile = isFile;
 	}
