@@ -108,10 +108,12 @@
 			</ul>
 		</div>
 		<div style="padding: 0px 0px 0px 15px;margin: 100px 0px 0px 0px;">
-			<div style="">进度条</div>
-			<div>
-				89.04G/2068G<a href="" style=";text-decoration: none;">扩容</a>
+			<div class="progress" style="margin-bottom: 5px; margin-right: 15px">
+			  <div id="sizeprogress" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+			    60%
+			  </div>
 			</div>
+			<span id="countSize">${countSize }</span>/<span id="totalSize">${totalSize }</span>
 			<div
 				style="margin-top: 10px;word-break:keep-all;white-space:nowrap;overflow:hidden;">
 				<span style="display: inline-block;width: 24%;"><a

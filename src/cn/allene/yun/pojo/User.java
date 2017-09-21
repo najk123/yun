@@ -4,6 +4,20 @@ public class User {
 	private Integer id;
 	private String username;
 	private String password;
+	private String countSize;
+	private String totalSize;
+	public String getCountSize() {
+		return countSize;
+	}
+	public void setCountSize(String countSize) {
+		this.countSize = countSize;
+	}
+	public String getTotalSize() {
+		return totalSize;
+	}
+	public void setTotalSize(String totalSize) {
+		this.totalSize = totalSize;
+	}
 	public Integer getId() {
 		return id;
 	}

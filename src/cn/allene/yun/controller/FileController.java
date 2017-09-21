@@ -35,34 +35,25 @@ public class FileController {
 
 	@RequestMapping("/upload")
 	public @ResponseBody Result<String> upload(@RequestParam("files") MultipartFile[] files, String currentPath) {
-		Result<String> result = null;
-		if (files != null) {
-			for (MultipartFile file : files) {
-				String filePath = fileService.uploadFilePath(request, file.getOriginalFilename());
-				try {
-					file.transferTo(new File(filePath));
-				} catch (Exception e) {
-					e.printStackTrace();
-					result = new Result<String>(301, false, "上传失败");
-					return result;
-				}
+			try {
+				fileService.uploadFilePath(request, files);
+			} catch (Exception e) {
+				return new Result<>(301, false, "上传失败");
 			}
-		}
-		result = new Result<String>(305, true, "上传成功");
-		return result;
+			return new Result<String>(305, true, "上传成功");
 	}
 
 	@RequestMapping("/download")
-	public ResponseEntity<byte[]> download(String[] downPath) {
+	public ResponseEntity<byte[]> download(String currentPath, String[] downPath) {
 		try {
-			String downPackage = fileService.downPackage(request, downPath);
-			File downloadFile = new File(downPackage);
+			File downloadFile = fileService.downPackage(request, currentPath, downPath);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			String fileName = new String(downloadFile.getName().getBytes("utf-8"), "iso-8859-1");
 			headers.setContentDispositionFormData("attachment", fileName);
-			return new ResponseEntity<byte[]>(org.apache.commons.io.FileUtils.readFileToByteArray(downloadFile),
-					headers, HttpStatus.CREATED);
+			byte[] fileToByteArray = org.apache.commons.io.FileUtils.readFileToByteArray(downloadFile);
+			fileService.deleteDownPackage(downloadFile);
+			return new ResponseEntity<byte[]>(fileToByteArray, headers, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -96,7 +87,8 @@ public class FileController {
 			return new Result<>(322, false, "删除失败");
 		}
 	}
-	
+	//测试test分支pull requst
+	//测试test分支pull requst2
 	@RequestMapping("/renameDirectory")
 	public @ResponseBody Result<String> renameDirectory(String currentPath, String srcName, String destName){
 		try {
