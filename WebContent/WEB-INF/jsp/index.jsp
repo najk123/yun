@@ -96,47 +96,29 @@
 	function getFiles(path) {
 		// 		var oldPath = $("#list").attr("currentPath");
 		// 		var newPath = oldPath + "\\" + path;
-		$
-				.post(
-						"file/getFiles.action",
-						{
-							"path" : path
-						},
-						function(data) {
-							if (data.success) {
-								currentPath = path;
-								$("#list").empty();
-								// 				$("#list").attr("currentPath", newPath);
-								// 				$("#navPath").append('<a href="#" onclick="return theClick(this)">' + newPath + '</a>');
-								$
-										.each(
-												data.data,
-												function() {
-													$("#list")
-															.append(
-																	'<tr><td><input type="checkbox" aria-label="..."></td>'
-																			+ '<td width="60%"><a href="#" prePath="'
-																			+ path
-																			+ '" isFile="'
-																			+ this.file
-																			+ '" onclick="return preDirectory(this)">'
-																			+ this.fileName
-																			+ '</a></td>'
-																			+ '<td width="32px"><a href="#" class="glyphicon glyphicon-share"' +
-						'title="分享"></a></td>'
-																			+ '<td width="32px"><a href="#"' +
-						'class="glyphicon glyphicon-download-alt" title="下载"></a></td>'
-																			+ '<td width="32px"><a href="#"' +
-						'class="glyphicon glyphicon-option-horizontal" title="更多"></a></td>'
-																			+ '<td>'
-																			+ this.fileSize
-																			+ '</td>'
-																			+ '<td>'
-																			+ this.lastTime
-																			+ '</td></tr>');
-												});
-							}
-						});
+		$.post("file/getFiles.action",
+				{
+					"path" : path
+				},
+				function(data) {
+					if (data.success) {
+						currentPath = path;
+						$("#list").empty();
+						// 				$("#list").attr("currentPath", newPath);
+						// 				$("#navPath").append('<a href="#" onclick="return theClick(this)">' + newPath + '</a>');
+						$.each(data.data,
+								function() {
+									$("#list").append(
+										'<tr><td><input type="checkbox" aria-label="..."></td>'
+									  + 	'<td width="60%"><a href="#" prePath="' + path + '" isFile="' + this.file + '" onclick="return preDirectory(this)">' + this.fileName + '</a></td>'
+									  + 	'<td width="32px"><a href="#" class="glyphicon glyphicon-share"' + 'title="分享"></a></td>'
+									  + 	'<td width="32px"><a href="#"' + 'class="glyphicon glyphicon-download-alt" title="下载"></a></td>'
+									  + 	'<td width="32px"><a href="#"' + 'class="glyphicon glyphicon-option-horizontal" title="更多"></a></td>'
+									  + 	'<td>'+ this.fileSize + '</td>'
+									  + 	'<td>'+ this.lastTime+ '</td></tr>');
+								});
+					}
+				});
 	}
 
 	function preDirectory(obj) {
@@ -202,6 +184,8 @@
 		return false;
 	}
 
+	/*
+	 删除文件 */
 	function deleteall() {
 		var $id = $("input:checked");
 		var check = new Array();
@@ -210,7 +194,7 @@
 		} else {
 			$.each($id.parent().next().children(), function(i, n) {
 				check[i] = $(this).text();
-			})
+			});
 			//alert($id.parent().next().children().text());
 
 			$.ajax({
@@ -248,6 +232,71 @@
 		});
 		return false;
 	}
+
+	/* 移动文件及文件夹 */
+	function moveto(){
+		var $id = $("input:checked");
+		var canmove = "yes";
+		var check = new Array();
+		var targetdirectorypath = "";
+		if($id.length<1){
+			alert("请选择需要移动的文件");
+		}else{
+			layer.open({
+				  type: 2,			//0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+				  tilte: '移动到',
+				  area: ['500px', '300px'],
+				  shade: 0.6,			//遮罩透明度，默认：0.3
+				  shadeclose: false,	//控制点击弹层外区域关闭，默认：false
+				  fixed: false, 		//鼠标滚动时，层是否固定在可视区域，默认：true
+				  maxmin: false,		//是否允许全屏最小化，默认：false
+				  resize: false,		//是否允许拉伸，默认：true
+				  anim: 0,				//0-6的动画形式，-1不开启，默认0
+				  scrollbar: true,		//是否允许浏览器出现滚动条，默认：true
+				  move: false,			//触发拖动的元素，默认是触发标题区域拖拽
+				  closeBtn: 0,			//提供了两种风格的关闭按钮，可通过配置1和2来展示,如果不显示，则closeBtn: 0，默认：1
+				  content: 'file/summarylist.action',
+				  btn: ['确定', '取消'],
+				  yes: function(index,layero){
+							var tree = layer.getChildFrame('.chooseup > .path',index);
+							targetdirectorypath = tree.html();
+							
+							$.each($id.parent().next().children(), function(i, n) {
+								check[i] = $(this).text();
+								var start = currentPath+"\\"+check[i];
+								var end = "\\\\"+targetdirectorypath;
+								if(end.length>=start.length && end.startsWith(start)){
+									layer.msg("文件夹不能放在在身及其子文件夹内！");
+									layer.close(index);
+									canmove = "no";
+									return false;
+								}
+							});
+							if(canmove == "yes"){
+								$.ajax({
+									type : "POST",
+									url : "file/moveDirectory.action",
+									data : {
+										"currentPath" : currentPath,
+										"directoryName" : check,
+										"targetdirectorypath" : targetdirectorypath
+									},
+									success : function(data) {
+										layer.msg(data.msg);
+										getFiles(currentPath);
+									},
+									traditional : true
+								});
+								layer.close(index);
+							}
+					  },
+				  btn2: function(index,layero){
+					  		layer.close(index);}
+				});
+		}
+		return false;
+	}
+	
 </script>
 </head>
 <body>

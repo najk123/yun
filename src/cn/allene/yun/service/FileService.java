@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import cn.allene.yun.pojo.FileCustom;
+import cn.allene.yun.pojo.summaryFile;
 import cn.allene.yun.utils.FileUtils;
 @Service
 public class FileService {
@@ -104,6 +106,37 @@ public class FileService {
 		}
 		return lists;
 	}
+	
+	public summaryFile summarylistFile(String realPath,int number){
+		File file = new File(realPath);
+		summaryFile sF = new summaryFile();
+		List<summaryFile> returnlist = new ArrayList<summaryFile>();
+		if(file.isDirectory()){
+			sF.setisFile(false);
+			if(realPath.length()<=number){
+				sF.setfileName("yun盘");
+				sF.setPath("");
+			}else{
+				String path = file.getPath();
+				sF.setfileName(file.getName());
+				sF.setPath(path.substring(number));
+			}
+			/*设置抽象文件夹的包含文件集合*/
+			for(File filex : file.listFiles()){
+				summaryFile innersF = summarylistFile(filex.getPath(),number);
+				if(!innersF.getisFile()){
+					returnlist.add(innersF);
+				}
+			}
+			sF.setListFile(returnlist);
+			/*设置抽象文件夹的包含文件夹个数*/
+			sF.setListdiretory(returnlist.size());
+			
+		}else{
+			sF.setisFile(true);
+		}
+		return sF;
+	}
 
 	public boolean addDirectory(HttpServletRequest request, String currentPath, String directoryName) {
 		File file = new File(getFileName(request, currentPath), directoryName);
@@ -152,6 +185,54 @@ public class FileService {
 		for (String newFileName : DEFAULT_DIRECTORY) {
 			File newFile = new File(file, newFileName);
 			newFile.mkdir();
+		}
+	}
+
+	private void copyfile(File srcFile, File targetFile) throws IOException {
+		// TODO Auto-generated method stub
+		if(!srcFile.isDirectory()){
+			/*如果是文件，直接复制*/
+			targetFile.createNewFile();
+			FileInputStream src = (new FileInputStream(srcFile));
+			FileOutputStream target = new FileOutputStream(targetFile);
+			FileChannel in = src.getChannel();
+			FileChannel out = target.getChannel();
+			in.transferTo(0, in.size(), out);
+			src.close();
+			target.close();
+		}else{
+			/*如果是文件夹，再遍历*/
+			File[] listFiles = srcFile.listFiles();
+			targetFile.mkdir();
+			for (File file : listFiles) {
+				File realtargetFile = new File(targetFile, file.getName());
+				copyfile(file,realtargetFile);
+			}
+		}
+	}
+	public void moveDirectory(HttpServletRequest request, String currentPath,String[] directoryName, String targetdirectorypath) throws IOException {
+		// TODO Auto-generated method stub
+		for (String srcName : directoryName) {
+			File srcFile = new File(getFileName(request, currentPath), srcName);
+			File targetFile = new File(getFileName(request, targetdirectorypath), srcName);
+			/*处理目标目录中存在同名文件或文件夹问题*/
+			if(srcFile.isDirectory()){
+				if(targetFile.exists()){
+					for(int i = 1;!targetFile.mkdir();i++){
+						targetFile = new File(targetFile.getParentFile(),srcName+"("+i+")");
+					};
+				}
+			}else{
+				if(targetFile.exists()){
+					for(int i = 1;!targetFile.createNewFile();i++){
+						targetFile = new File(targetFile.getParentFile(),srcName+"("+i+")");
+					}
+				}
+			}
+			
+			/*移动即先复制，再删除*/
+		    copyfile(srcFile,targetFile);
+		    delFile(srcFile);
 		}
 	}
 }

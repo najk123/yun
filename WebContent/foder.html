@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>文件浏览器测试</title>
+<link href="css/foder.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+	/*
+	 获取所有的科目ID
+	 获取在同科目ID下的所有不同出版社ID
+	 获取在同个科目同个出版社下的所有不同年级ID
+	 获取在同个科目，出版社，年级下面所有不同的上下册ID
+	 */
+
+	$(function() {
+		$(".fla").click(
+				function() {
+					if ($(this).next().css("display") == "none") {
+						$(this).children(".open").removeClass("open").addClass(
+								"close");
+						$(this).children(".pack").removeClass("pack").addClass(
+								"packC");
+						$(this).next().removeClass("none");
+					} else {
+						$(this).children(".close").removeClass("close")
+								.addClass("open");
+						$(this).children(".packC").removeClass("packC")
+								.addClass("pack");
+						$(this).next().addClass("none");
+					}
+				});
+	});
+</script>
+</head>
+<div class="foder">
+	<ul class="ful">
+		<li>
+			<div class="fla">
+				<span class="open btn" id="id1"></span> <span class="pack btn"
+					id="id2"></span> <span class="ftext">语文</span>
+			</div>
+			<ul class="ful none" id="id3">
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">第一章</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第一节</span>
+							</div>
+						</li>
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第二节</span>
+							</div>
+						</li>
+						<li>
+							<div>
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第三节</span>
+							</div>
+						</li>
+					</ul></li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">第二章</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第一节</span>
+							</div>
+						</li>
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第二节</span>
+							</div>
+						</li>
+						<li>
+							<div>
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第三节</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">第三章</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第一节</span>
+							</div>
+						</li>
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第二节</span>
+							</div>
+						</li>
+						<li>
+							<div>
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第三节</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<div class="fla">
+				<span class="open btn" id="id1"></span> <span class="pack btn"
+					id="id2"></span> <span class="ftext">数学</span>
+			</div>
+			<ul class="ful none" id="id3">
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">第一章</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第一节</span>
+							</div>
+						</li>
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第二节</span>
+							</div>
+						</li>
+						<li>
+							<div>
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第三节</span>
+							</div>
+						</li>
+					</ul></li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">第二章</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第一节</span>
+							</div>
+						</li>
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第二节</span>
+							</div>
+						</li>
+						<li>
+							<div>
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第三节</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">第三章</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第一节</span>
+							</div>
+						</li>
+						<li>
+							<div class="fla">
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第二节</span>
+							</div>
+						</li>
+						<li>
+							<div>
+								<span class="close btn"></span> <span class="pack btn"></span> <span
+									class="ftext">第三节</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<body>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package cn.allene.yun.pojo;
 
+
 public class FileCustom {
 	private String fileName;
 	private boolean isFile;
