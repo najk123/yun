@@ -73,6 +73,6 @@ $(function() {
 		</li>
 	</ul>
 </div>
-<div id="tree">根目录是否是文件:${rootlist.isFile} 目录下包含目录数:${rootlist.listdiretory}</div>
+
 </body>
 </html>

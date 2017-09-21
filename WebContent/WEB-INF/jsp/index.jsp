@@ -266,7 +266,7 @@
 								var start = currentPath+"\\"+check[i];
 								var end = "\\\\"+targetdirectorypath;
 								if(end.length>=start.length && end.startsWith(start)){
-									layer.msg("文件夹不能放在在身及其子文件夹内！");
+									layer.msg("文件夹不能放在自身及其子文件夹内！");
 									layer.close(index);
 									canmove = "no";
 									return false;
