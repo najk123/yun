@@ -19,10 +19,10 @@
 				<a class="btn btn-default glyphicon glyphicon-share" href="#" onclick="return share(this)">分享</a>
 				<a class="btn btn-default glyphicon glyphicon-download-alt" href="#" id="download" onclick="return downloadFile(this)">下载</a>
 				<a class="btn btn-default glyphicon glyphicon-trash" href="#" id="delete" onclick="return deleteall()">删除</a>
-				<a class="btn btn-default" href="#" id="main-rename" onclick="return rename()">重命名</a> <a
-					class="btn btn-default" href="#">复制到</a> <a class="btn btn-default"
-					href="#">移动到</a> <a class="btn btn-default" href="#"
-					style="width: 100px;">推送到云设备</a>
+				<a class="btn btn-default" href="#" id="main-rename" onclick="return rename()">重命名</a> 
+				<a class="btn btn-default" href="#">复制到</a>
+				<a class="btn btn-default" href="#" id="main-moveto" onclick="return moveto()">移动到</a> 
+				<a class="btn btn-default" href="#" style="width: 100px;">推送到云设备</a>
 			</div>
 			<div class="input-group"
 				style="width: 200px; float: right; margin-top: 10px; margin-right: 50px;">
