@@ -199,7 +199,7 @@ var currentPath;
 		});
 		return false;
 	}
-	
+	 
 	//上传文件*upload()
 	function upload(){
 		var files = document.getElementById("input").files;
