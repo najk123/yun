@@ -96,12 +96,12 @@
 				</li>
 
 				<li style="width: 100%; height: 38px;padding: 0px;margin: 0px;">
-					<a
-					style="display: inline-block;width: 179px;height: 38px;padding: 0px 0px 0px 15px;position: relative;vertical-align:middle; line-height: 38px;text-decoration: none;">
+					<a style="display: inline-block;width: 179px;height: 38px;padding: 0px 0px 0px 15px;position: relative;vertical-align:middle; line-height: 38px;text-decoration: none;"
+					href="file/recycleFile.action">
 						<span
 						style="width: 38px;height: 38px;display: inline-block;text-align: center;">
 							<span class="glyphicon glyphicon-trash"></span>
-					</span> <span style="display: inline-block;text-align: left;" onclick="return recycle()">回收站</span>
+					</span> <span style="display: inline-block;text-align: left;">回收站</span>
 				</a>
 				</li>
 

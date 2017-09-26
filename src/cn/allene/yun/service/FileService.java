@@ -6,35 +6,46 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.tomcat.util.buf.UEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.allene.yun.dao.UserDao;
 import cn.allene.yun.pojo.FileCustom;
-import cn.allene.yun.pojo.Result;
+import cn.allene.yun.pojo.User;
+import cn.allene.yun.pojo.summaryFile;
 import cn.allene.yun.utils.FileUtils;
-import sun.security.util.Length;
 
 @Service
 public class FileService {
-	private static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
+	public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
 	public static final String NAMESPACE = "username";
 	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source" };
+	/*--删除前路径--*/
+	public static String prePath = null;
 	@Autowired
 	private UserDao userDao;
-
-	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files) throws Exception {
+	
+	/*--回收站显示所有删除文件--*/
+	public List<FileCustom> recycleFile(HttpServletRequest request) throws Exception{
+		return listFile(getFileName(request, User.RECYCLE));
+	}
+	
+	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception {
 		for (MultipartFile file : files) {
-			String filePath = getFileName(request, file.getOriginalFilename());
-			file.transferTo(new File(filePath));
+			String filePath = getFileName(request, currentPath);
+			file.transferTo(new File(filePath, file.getOriginalFilename()));
 		}
 		reSize(request);
 	}
@@ -45,17 +56,21 @@ public class FileService {
 		}
 	}
 
-	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames) throws Exception {
+	public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username)
+			throws Exception {
 		File downloadFile = null;
+		if (currentPath == null) {
+			currentPath = "";
+		}
 		if (fileNames.length == 1) {
-			downloadFile = new File(getFileName(request, currentPath), fileNames[0]);
+			downloadFile = new File(getFileName(request, currentPath, username) + fileNames[0]);
 			if (downloadFile.isFile()) {
 				return downloadFile;
 			}
 		}
 		String[] sourcePath = new String[fileNames.length];
 		for (int i = 0; i < fileNames.length; i++) {
-			sourcePath[i] = getFileName(request, fileNames[i]);
+			sourcePath[i] = getFileName(request, fileNames[i], username);
 		}
 		String packageZipName = packageZip(sourcePath);
 		downloadFile = new File(packageZipName);
@@ -109,41 +124,98 @@ public class FileService {
 		return getRootPath(request) + username + File.separator + fileName;
 	}
 
+	public String getFileName(HttpServletRequest request, String fileName, String username) {
+		if (username == null) {
+			return getFileName(request, fileName);
+		}
+		if (fileName == null) {
+			fileName = "";
+		}
+		return getRootPath(request) + username + File.separator + fileName;
+	}
+
 	public List<FileCustom> listFile(String realPath) {
 		File[] files = new File(realPath).listFiles();
 		List<FileCustom> lists = new ArrayList<FileCustom>();
-		for (File file : files) {
-			FileCustom custom = new FileCustom();
-			custom.setFileName(file.getName());
-			custom.setLastTime(FileUtils.formatTime(file.lastModified()));
-			if (file.isDirectory()) {
-				custom.setFileSize("-");
-				custom.setFile(false);
-			} else {
-				custom.setFileSize(FileUtils.getDataSize(file.length()));
-				custom.setFile(true);
+		if (files != null) {
+			for (File file : files) {
+				FileCustom custom = new FileCustom();
+				custom.setFileName(file.getName());
+				custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+				/*保存文件的删除前路径以及当前路径*/
+				custom.setFilePath(prePath);
+				custom.setCurrentPath(realPath);
+				if (file.isDirectory()) {
+					custom.setFileSize("-");
+					custom.setFile(false);
+				} else {
+					custom.setFileSize(FileUtils.getDataSize(file.length()));
+					custom.setFile(true);
+				}
+				lists.add(custom);
 			}
-			lists.add(custom);
 		}
 		return lists;
+	}
+
+	public summaryFile summarylistFile(String realPath, int number) {
+		File file = new File(realPath);
+		summaryFile sF = new summaryFile();
+		List<summaryFile> returnlist = new ArrayList<summaryFile>();
+		if (file.isDirectory()) {
+			sF.setisFile(false);
+			if (realPath.length() <= number) {
+				sF.setfileName("yun盘");
+				sF.setPath("");
+			} else {
+				String path = file.getPath();
+				sF.setfileName(file.getName());
+				sF.setPath(path.substring(number));
+			}
+			/* 设置抽象文件夹的包含文件集合 */
+			for (File filex : file.listFiles()) {
+				summaryFile innersF = summarylistFile(filex.getPath(), number);
+				if (!innersF.getisFile()) {
+					returnlist.add(innersF);
+				}
+			}
+			sF.setListFile(returnlist);
+			/* 设置抽象文件夹的包含文件夹个数 */
+			sF.setListdiretory(returnlist.size());
+
+		} else {
+			sF.setisFile(true);
+		}
+		return sF;
 	}
 
 	public boolean addDirectory(HttpServletRequest request, String currentPath, String directoryName) {
 		File file = new File(getFileName(request, currentPath), directoryName);
 		return file.mkdir();
 	}
-
-	public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) {
+	
+	/*--依次遍历recycle下各个文件，并删除--*/
+	public void delRecycleDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception{	
 		for (String delName : directoryName) {
-			File srcFile = new File(getFileName(request, currentPath), delName);
+			File srcFile = new File(currentPath + File.separator + delName);
 			delFile(srcFile);
 		}
 		reSize(request);
 	}
+	
+	public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception {
+		/*--获取文件删除前的路径--*/
+		prePath = currentPath;
+		/*--将删除文件移动到recycle目录下*/
+		moveDirectory(request,currentPath,directoryName,User.RECYCLE);
+		reSize(request);
+	}
 
-	private void delFile(File srcFile) {
+	private void delFile(File srcFile) throws Exception {
 		/* 如果是文件，直接删除 */
+		
 		if (!srcFile.isDirectory()) {
+			/* 使用map 存储删除的 文件路径，同时保存用户名*/
 			srcFile.delete();
 			return;
 		}
@@ -179,6 +251,57 @@ public class FileService {
 		}
 	}
 
+	private void copyfile(File srcFile, File targetFile) throws IOException {
+		// TODO Auto-generated method stub
+		if (!srcFile.isDirectory()) {
+			/* 如果是文件，直接复制 */
+			targetFile.createNewFile();
+			FileInputStream src = (new FileInputStream(srcFile));
+			FileOutputStream target = new FileOutputStream(targetFile);
+			FileChannel in = src.getChannel();
+			FileChannel out = target.getChannel();
+			in.transferTo(0, in.size(), out);
+			src.close();
+			target.close();
+		} else {
+			/* 如果是文件夹，再遍历 */
+			File[] listFiles = srcFile.listFiles();
+			targetFile.mkdir();
+			for (File file : listFiles) {
+				File realtargetFile = new File(targetFile, file.getName());
+				copyfile(file, realtargetFile);
+			}
+		}
+	}
+
+	public void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,
+			String targetdirectorypath) throws Exception {
+		// TODO Auto-generated method stub
+		for (String srcName : directoryName) {
+			File srcFile = new File(getFileName(request, currentPath), srcName);
+			File targetFile = new File(getFileName(request, targetdirectorypath), srcName);
+			/* 处理目标目录中存在同名文件或文件夹问题 */
+			if (srcFile.isDirectory()) {
+				if (targetFile.exists()) {
+					for (int i = 1; !targetFile.mkdir(); i++) {
+						targetFile = new File(targetFile.getParentFile(), srcName + "(" + i + ")");
+					}
+					;
+				}
+			} else {
+				if (targetFile.exists()) {
+					for (int i = 1; !targetFile.createNewFile(); i++) {
+						targetFile = new File(targetFile.getParentFile(), srcName + "(" + i + ")");
+					}
+				}
+			}
+
+			/* 移动即先复制，再删除 */
+			copyfile(srcFile, targetFile);
+			delFile(srcFile);
+		}
+	}
+
 	private long countFileSize(File srcFile) {
 		File[] listFiles = srcFile.listFiles();
 		if (listFiles == null) {
@@ -206,6 +329,7 @@ public class FileService {
 			userDao.reSize(userName, countFileSize(request));
 		} catch (Exception e) {
 			e.printStackTrace();
+
 		}
 	}
 }

@@ -14,15 +14,15 @@
 			<a class="btn btn-default glyphicon glyphicon-folder-open" href="#"
 				role="button"
 				style="margin-left: 10px; margin-top: 10px; width: 100px;" onclick="return buildfile()">&nbsp;新建文件夹</a>
-			<div class="btn-group" role="group"
+			<div class="btn-group" role="group" id="operation"
 				style="margin-left: 10px; margin-top: 10px;">
-				<a class="btn btn-default glyphicon glyphicon-share" href="#">分享</a>
+				<a class="btn btn-default glyphicon glyphicon-share" href="#" onclick="return share(this)">分享</a>
 				<a class="btn btn-default glyphicon glyphicon-download-alt" href="#" id="download" onclick="return downloadFile(this)">下载</a>
 				<a class="btn btn-default glyphicon glyphicon-trash" href="#" id="delete" onclick="return deleteall()">删除</a>
-				<a class="btn btn-default" href="#" id="main-rename" onclick="return rename()">重命名</a> <a
-					class="btn btn-default" href="#">复制到</a> <a class="btn btn-default"
-					href="#">移动到</a> <a class="btn btn-default" href="#"
-					style="width: 100px;">推送到云设备</a>
+				<a class="btn btn-default" href="#" id="main-rename" onclick="return rename()">重命名</a> 
+				<a class="btn btn-default" href="#">复制到</a>
+				<a class="btn btn-default" href="#" id="main-moveto" onclick="return moveto()">移动到</a> 
+				<a class="btn btn-default" href="#" style="width: 100px;">推送到云设备</a>
 			</div>
 			<div class="input-group"
 				style="width: 200px; float: right; margin-top: 10px; margin-right: 50px;">
@@ -44,7 +44,7 @@
 		<table class="table table-hover" id="mytable">
 			<thead>
 				<tr>
-					<th><input type="checkbox" aria-label="..."></th>
+					<th><input id="checkAll" type="checkbox" aria-label="..."></th>
 					<th colspan="4" width="60%">文件名</th>
 					<th>大小</th>
 					<th>修改时间</th>

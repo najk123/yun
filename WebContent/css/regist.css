@@ -32,6 +32,7 @@
    font-family: "微软雅黑";
    font-size: large;
     margin-top: 5px;
+    margin-left:100px;
     color: grey;
     float: left;  
     /*border: solid 1px red;*/
@@ -96,10 +97,13 @@ dt {
     color: #666;  
     text-align: right;  
 }  
-  
+dd{
+	
+}
 .ipt_box {  
     float: left;  
     position: relative;  
+    margin-top: 11px;
 }  
   
 .ipt_box input {  

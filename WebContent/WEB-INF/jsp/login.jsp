@@ -26,18 +26,18 @@
 <body>
 	<div id="slider-title">
 		<img src="${pageContext.request.contextPath }/img/logo.png" height="45" width="45" />
-		<div id="title-logo">百度网盘</div>
+		<div id="title-logo">yun网盘</div>
 	</div>
 	<div class="slider">
 		<ul class="slider-main">
-			<li class="slider-panel"><a href="#" target="_blank"><img
-					alt="百度云盘" title="百度云盘" src="${pageContext.request.contextPath }/img/a.jpg"></a></li>
-			<li class="slider-panel"><a href="#" target="_blank"><img
-					alt="百度云盘" title="百度云盘" src="${pageContext.request.contextPath }/img/d.jpg"></a></li>
-			<li class="slider-panel"><a href="#" target="_blank"><img
-					alt="百度云盘" title="百度云盘" src="${pageContext.request.contextPath }/img/g.jpg"></a></li>
-			<li class="slider-panel"><a href="#" target="_blank"><img
-					alt="百度云盘" title="百度云盘" src="${pageContext.request.contextPath }/img/f.jpg"></a></li>
+			<li class="slider-panel"><a href="#" ><img
+					alt="yun网盘" title="yun网盘" src="${pageContext.request.contextPath }/img/a.jpg"></a></li>
+			<li class="slider-panel"><a href="#" ><img
+					alt="yun网盘"   src="${pageContext.request.contextPath }/img/d.jpg"></a></li>
+			<li class="slider-panel"><a href="#" ><img
+					alt="yun网盘" title="yun网盘" src="${pageContext.request.contextPath }/img/g.jpg"></a></li>
+			<li class="slider-panel"><a href="#" ><img
+					alt="yun网盘" title="yun网盘" src="${pageContext.request.contextPath }/img/f.jpg"></a></li>
 		</ul>
 		<div class="slider-extra">
 			<ul class="slider-nav">
@@ -48,40 +48,18 @@
 			</ul>
 		</div>
 	</div>
-	<div class="icon">
-		<ul class="ul-icon">
-			<li><div class="div-li">
-					<img src="${pageContext.request.contextPath }/img/windows.png" class="li-icon"><span
-						class="title">Windows</span>
-				</div></li>
-			<li><div class="div-li">
-					<img src="${pageContext.request.contextPath }/img/android.png" class="li-icon"><span
-						class="title">Android</span>
-				</div></li>
-			<li><div class="div-li">
-					<img src="${pageContext.request.contextPath }/img/iphone.png" class="li-icon"><span id="title-se">iphone</span>
-				</div></li>
-			<li><div class="div-li">
-					<img src="${pageContext.request.contextPath }/img/ipad.png" class="li-icon"><span
-						class="title-se1">ipad</span>
-				</div></li>
-			<li><div class="div-li">
-					<img src="${pageContext.request.contextPath }/img/mac.png" class="li-icon"><span
-						class="title-se1">mac</span>
-				</div></li>
-		</ul>
-	</div>
+
 	<div id="login">
 		<form action="user/login.action" method="post">
 			<div id="form-title">账号密码登录</div>
 			<input type="text" placeholder="用户名" name="username" class="login-input" id="name" />
-			<input type="password" placeholder="密码" name="password" class="login-input" /><br/> <input
-				type="checkbox" class="input" /><span class="ck_text">下次自动登录</span>
+			<input type="password" placeholder="密码" name="password" class="login-input" /><br/>
+<!-- 			<input type="checkbox" class="input" /><span class="ck_text">下次自动登录</span> -->
 			<input type="submit" value="登录" class="login-btn" /><br/>
-			<div id="a_div">
-				<a href="#" class="a_login">登录遇到问题</a> <a class="a_login" href="#"
-					id="phone">海外手机号</a>
-			</div>
+<!-- 			<div id="a_div"> -->
+<!-- 				<a href="#" class="a_login">登录遇到问题</a> <a class="a_login" href="#" -->
+<!-- 					id="phone">海外手机号</a> -->
+<!-- 			</div> -->
 			<div id="bottom">
 				<div id="inner">
 					<div class="inner">
