@@ -1,7 +1,6 @@
 package cn.allene.yun.pojo;
 
 public class ShareFile extends FileCustom {
-	private String path;
 	private String shareUser;
 	private String url;
 	
@@ -11,12 +10,12 @@ public class ShareFile extends FileCustom {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	public String getPath() {
-		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
-	}
+//	public String getPath() {
+//		return path;
+//	}
+//	public void setPath(String path) {
+//		this.path = path;
+//	}
 	public String getShareUser() {
 		return shareUser;
 	}

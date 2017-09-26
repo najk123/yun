@@ -8,7 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.buf.UEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,9 +39,16 @@ import cn.allene.yun.utils.UserUtils;
 public class FileService {
 	public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
 	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source" };
+	/*--删除前路径--*/
+	public static String prePath = null;
 	@Autowired
 	private UserDao userDao;
-
+	
+	/*--回收站显示所有删除文件--*/
+	public List<FileCustom> recycleFile(HttpServletRequest request) throws Exception{
+		return listFile(getFileName(request, User.RECYCLE));
+	}
+	
 	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception {
 		for (MultipartFile file : files) {
 			String filePath = getFileName(request, currentPath);
@@ -139,6 +149,9 @@ public class FileService {
 				FileCustom custom = new FileCustom();
 				custom.setFileName(file.getName());
 				custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+				/*保存文件的删除前路径以及当前路径*/
+				custom.setFilePath(prePath);
+				custom.setCurrentPath(realPath);
 				if (file.isDirectory()) {
 					custom.setFileSize("-");
 				} else {
@@ -173,7 +186,7 @@ public class FileService {
 						custom.setLastTime(FileUtils.formatTime(file.lastModified()));
 						String parentPath = file.getParent();
 						String prePath = parentPath.substring(parentPath.indexOf(getFileName(request, null)) + getFileName(request, null).length());
-						custom.setPrePath(File.separator + prePath);
+						custom.setCurrentPath(File.separator + prePath);
 						if (file.isDirectory()) {
 							custom.setFileSize("-");
 						} else {
@@ -224,18 +237,29 @@ public class FileService {
 		File file = new File(getFileName(request, currentPath), directoryName);
 		return file.mkdir();
 	}
-
-	public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) {
+	
+	/*--依次遍历recycle下各个文件，并删除--*/
+	public void delRecycleDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception{	
 		for (String delName : directoryName) {
-			File srcFile = new File(getFileName(request, currentPath), delName);
+			File srcFile = new File(currentPath + File.separator + delName);
 			delFile(srcFile);
 		}
 		reSize(request);
 	}
+	
+	public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception {
+		/*--获取文件删除前的路径--*/
+		prePath = currentPath;
+		/*--将删除文件移动到recycle目录下*/
+		moveDirectory(request,currentPath,directoryName,User.RECYCLE);
+		reSize(request);
+	}
 
-	private void delFile(File srcFile) {
+	private void delFile(File srcFile) throws Exception {
 		/* 如果是文件，直接删除 */
+		
 		if (!srcFile.isDirectory()) {
+			/* 使用map 存储删除的 文件路径，同时保存用户名*/
 			srcFile.delete();
 			return;
 		}
@@ -295,7 +319,7 @@ public class FileService {
 	}
 
 	public void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,
-			String targetdirectorypath) throws IOException {
+			String targetdirectorypath) throws Exception {
 		// TODO Auto-generated method stub
 		for (String srcName : directoryName) {
 			File srcFile = new File(getFileName(request, currentPath), srcName);
@@ -359,10 +383,4 @@ public class FileService {
 		InputStream inputStream = new FileInputStream(file);
 		IOUtils.copy(inputStream, response.getOutputStream());	
 	}
-//
-//	public static void main(String[] args) {
-//		BceClientConfiguration config = new BceClientConfiguration();
-//		config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID, SECRET_ACCESS_KEY));
-//		DocClient client = new DocClient(config);
-//	}
 }

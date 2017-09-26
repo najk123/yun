@@ -6,12 +6,19 @@ public class FileCustom {
 	private String fileType;
 	private String fileSize;
 	private String lastTime;
-	private String prePath;
-	public String getPrePath() {
-		return prePath;
+	private String filePath;
+	private String currentPath;
+	public String getCurrentPath() {
+		return currentPath;
 	}
-	public void setPrePath(String prePath) {
-		this.prePath = prePath;
+	public void setCurrentPath(String currentPath) {
+		this.currentPath = currentPath;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	public String getFileName() {
 		return fileName;

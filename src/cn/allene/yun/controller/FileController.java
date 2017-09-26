@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.allene.yun.pojo.FileCustom;
 import cn.allene.yun.pojo.Result;
+import cn.allene.yun.pojo.User;
 import cn.allene.yun.pojo.summaryFile;
 import cn.allene.yun.service.FileService;
 
@@ -119,7 +121,7 @@ public class FileController {
 	}
 	
 	@RequestMapping("/moveDirectory")
-	public @ResponseBody Result<String> moveDirectory(String currentPath, String[] directoryName, String targetdirectorypath){
+	public @ResponseBody Result<String> moveDirectory(String currentPath, String[] directoryName, String targetdirectorypath) throws Exception{
 		
 		try {
 			fileService.moveDirectory(request,currentPath, directoryName, targetdirectorypath);
@@ -159,6 +161,41 @@ public class FileController {
 			fileService.respFile(response, request, currentPath, fileName, type);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	/*--存储回收站所有删除文件信息，并返回给recycle.jsp--*/
+	@RequestMapping("/recycleFile")
+	public String recycleFile(){
+		try{
+		List<FileCustom> findDelFile = fileService.recycleFile(request);
+		request.setAttribute("findDelFile", findDelFile);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return "recycle";
+	}
+	
+	/* --删除回收站文件--
+	 * --获取当前路径以及文件名--*/
+	@RequestMapping("/delRecycleDirectory")
+	public @ResponseBody Result<String> delRecycleDirectory(String currentPath,String[] directoryName){
+		try {
+			fileService.delRecycleDirectory(request, currentPath,directoryName);
+			return new Result<>(327, true, "删除成功");
+		} catch (Exception e) {
+			return new Result<>(322, false, "删除失败");
+		}
+	}
+	
+	/* --还原回收站文件--
+	 * --获取目的路径以及文件名--*/
+	@RequestMapping("/revertDirectory")
+	public @ResponseBody Result<String> revertDirectory(String[] directoryName, String targetdirectorypath){
+		try {
+			fileService.moveDirectory(request,User.RECYCLE,directoryName,targetdirectorypath);
+			return new Result<>(327, true, "还原成功");
+		} catch (Exception e) {
+			return new Result<>(322, false, "还原失败");
 		}
 	}
 }

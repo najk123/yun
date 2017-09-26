@@ -3,7 +3,7 @@
 	<nav class="navbar navbar-default navbar-fixed-top"
 		style="background-color: #EFF4F8; margin-bottom: 0px; height: 10%; z-index: 50">
 	<div class="container">
-		<div class="navbar-header">
+		<div class="navbar-header" style="float:left;">
 			<span style="float: left;">
 <%-- 			<img src="${pageContext.request.contextPath }/img/logo@2x.png"height="50px" /> --%>
 			</span> <a class="navbar-brand" href="index.action"
@@ -18,7 +18,7 @@
 					<li><a href="#" id="btnRegistModel">注册</a></li>
 				</c:if>
 				<c:if test="${username!=null }">
-				<li class="dropdown">
+				<li class="dropdown" style="width:100px">
 					<a href="#" class="dropdown-toggle" id="user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 					<img src="${pageContext.request.contextPath }/img/titalpicture.jpg" height="20px" class="img-circle"/>
 					${username	 } <span class="caret"></span></a>

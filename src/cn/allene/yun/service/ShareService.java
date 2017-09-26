@@ -47,7 +47,6 @@ public class ShareService {
 				shareFile.setFileName(file.getName());
 				shareFile.setFileSize(file.isFile() ? FileUtils.getDataSize(file.length()) : "-");
 				shareFile.setLastTime(FileUtils.formatTime(file.lastModified()));
-				shareFile.setPath(share.getPath());
 				shareFile.setShareUser(share.getShareUser());
 				shareFile.setUrl(share.getShareUrl());
 				files.add(shareFile);
