@@ -28,13 +28,24 @@ public class ShareController {
 		}
 		return "share";
 	}
-	
+	@RequestMapping("/searchShare")
+	public @ResponseBody Result<List<ShareFile>> searchShare(HttpServletRequest request, int status){
+		try {
+			List<ShareFile> files = shareService.findShareByName(request, status);
+			Result<List<ShareFile>> result = new Result<>(415, true, "获取成功");
+			result.setData(files);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result<>(401, false, "获取失败");
+		}
+	}
 	@RequestMapping("/shareFile")
 	public @ResponseBody Result<String> shareFile(HttpServletRequest request, String currentPath, String[] shareFile){
 		try {
 			String shareUrl = shareService.shareFile(request, currentPath, shareFile);
 			Result<String> result = new Result<>(405, true, "分享成功");
-			result.setData("share.action?shareUrl=" + shareUrl);
+			result.setData(shareUrl);
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();

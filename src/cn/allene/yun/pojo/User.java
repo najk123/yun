@@ -1,6 +1,8 @@
 package cn.allene.yun.pojo;
 
 public class User {
+	public static final String NAMESPACE = "username";
+	
 	private Integer id;
 	private String username;
 	private String password;

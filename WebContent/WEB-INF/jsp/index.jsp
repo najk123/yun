@@ -20,9 +20,12 @@
 <meta http-equiv="description" content="This is my page">
 <link href="${pageContext.request.contextPath }/css/bootstrap.min.css"
 	rel="stylesheet">
+<link href="${pageContext.request.contextPath }/css/lightbox.css"
+	rel="stylesheet">
 <link href="${pageContext.request.contextPath }/css/layer.css"
 	rel="stylesheet">
 <script src="${pageContext.request.contextPath }/js/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath }/js/lightbox.js"></script>
 <script src="${pageContext.request.contextPath }/js/bootstrap.min.js"></script>
 <script src="${pageContext.request.contextPath }/js/layer.js"></script>
 <style>
@@ -178,7 +181,7 @@
 // 				$("#navPath").append('<a href="#" onclick="return theClick(this)">' + newPath + '</a>');
 				$.each(data.data, function() {
 					$("#list").append('<tr><td><input onclick="selectCheckbox()" name="check_name" type="checkbox" aria-label="..."></td>' +
-						'<td width="60%"><a href="#" prePath="' + path +'" isFile="' + this.file +'" onclick="return preDirectory(this)">' + this.fileName + '</a></td>' +
+						'<td width="60%"><a href="#" prePath="' + path +'" fileType="' + this.fileType +'" onclick="return openFile(this)"><span class="glyphicon glyphicon-'+this.fileType+'" style="margin-right: 10px"></span>' + this.fileName + '</a></td>' +
 						'<td width="32px"><a href="#" class="glyphicon glyphicon-share"' +
 						'title="分享"></a></td>' +
 						'<td width="32px"><a href="#"' +
@@ -191,18 +194,6 @@
 			}
 		});
 	}
-  
-	function preDirectory(obj) {
-		if ($(obj).attr("isfile") == "false") {
-			var prePath = $(obj).attr("prePath");
-			var currentPath = $(obj).text();
-			var path = prePath + "\\" + currentPath;
-			getFiles(path);
-			navPath(path, currentPath); 
-		}
-		return false;
-	}
-
 	function theClick(obj) {
 		getFiles($(obj).attr("path"));
 		$(obj).nextAll().remove();
@@ -372,21 +363,14 @@
 				},
 				traditional:true
 				,success:function(data){
-					var host = window.location.href;
-					host = host.substring(0, host.lastIndexOf("/yun") + 5);
-					var url = host + data.data;
 					layer.open({
 						  title: '分享',
-						  content: '<input id="url" value="' + url + '" class="form-control" readonly="readonly"/>'
+						  content: '<input id="url" value="' + joinUrl(data.data) + '" class="form-control" readonly="readonly"/>'
 						  ,btn: ['复制到粘贴板', '返回'],
 						  area: ['500px', '200px']
 						  ,yes: function(index, layero){ 
 						    //按钮【按钮一】的回调
-							  $("#url").select();
-							  var successful = document.execCommand('copy');
-							  if(successful){
-								  layer.tips('复制成功', $("#url"), {tips: 3});
-							  }
+							  copyUrl($("#url"));
 						  },end: function(index, layero){ 
 							$("input:checkbox").prop("checked", false);  
 						  } 
@@ -396,6 +380,18 @@
 		}
 		return false;
 	} 
+	function copyUrl(obj){
+		  obj.select();
+		  var successful = document.execCommand('copy');
+		  if(successful){
+			  layer.tips('复制成功', obj, {tips: 3});
+		  }
+	}
+	function joinUrl(url){
+		var host = window.location.href;
+		host = host.substring(0, host.indexOf("/yun") + 5);
+		return host + "share.action?shareUrl=" + url;
+	}
 	/* for(var i=0; i< files.length; i++){
 		alert(input.files[i].name);
 	}	 */
@@ -475,7 +471,112 @@
 		}
 		return false;
 	}
-	
+
+	function searchFile(obj){
+		var reg = $(obj).prev().val();
+		if(reg.trim() == "" || reg.trim() == null){
+// 			if(currentPath != "\\"){
+// 				window.location.reload();
+				getFiles(currentPath); 
+// 			}
+		}else{
+			$("#list").empty();
+			$.post("file/searchFile.action", {
+				"reg" : reg,
+				"currentPath" : currentPath
+			}, function(data) {
+				if (data.success) {
+// 					currentPath = path;
+					$("#checkAll").prop("checked",false);
+					$.each(data.data, function() {
+						$("#list").append('<tr><td><input onclick="selectCheckbox()" name="check_name" type="checkbox" aria-label="..."></td>' +
+							'<td width="60%"><a href="#" prePath="' + this.prePath +'" fileType="' + this.fileType +'" onclick="return openFile(this)">' + this.fileName + '</a></td>' +
+							'<td width="32px"><a href="#" class="glyphicon glyphicon-share"' +
+							'title="分享"></a></td>' +
+							'<td width="32px"><a href="#"' +
+							'class="glyphicon glyphicon-download-alt" title="下载"></a></td>' +
+							'<td width="32px"><a href="#"' +
+							'class="glyphicon glyphicon-option-horizontal" title="更多"></a></td>' +
+							'<td>' + this.fileSize + '</td>' +
+							'<td>' + this.lastTime + '</td></tr>');
+					});
+				}
+			});
+		}
+	}
+	function openMyShare(){
+		changeShareTab(1);
+		layer.open({ 
+			  type: 1, 
+			  area: ['850px', '450px'],
+			  title:false,
+			  content: $("#shareTab")
+			});
+	}
+	function changeShareTab(order){
+		$.post("searchShare.action",{
+			  "status":order
+		  },function(data){
+			  if(data.success){
+				  $("#shareTable tbody").empty();
+				  $.each(data.data, function(){
+					    $("#shareTable tbody").append('<tr><td><span class="glyphicon glyphicon-'+this.fileType+'" style="margin-right: 10px"></span>'+this.fileName+'</td><td>'+this.lastTime+'</td><td><input id="url" onFocus="copyUrl(this)" value="' + joinUrl(this.url) + '" class="form-control" readonly="readonly"/></td></tr>');
+				  });
+				   
+			  }
+		  }
+					
+		);
+		return false;
+	}
+	function searchFileType(type){
+		var tabName = type + "Tab";
+		$("#fileTypeList li").has("a[aria-controls='"+tabName+"']").addClass("active").siblings().removeClass("active");
+		$("#"+tabName).addClass("active").siblings().removeClass("active");
+		changeTypeTab(type);
+		layer.open({ 
+			  type: 1, 
+			  zIndex : 80,
+			  area: ['890px', '450px'],
+			  title:false,
+			  content: $("#fileTypeList")
+			});
+		return false;
+	}
+	function changeTypeTab(type){
+		$.post("file/searchFile.action", {
+			"regType" : type
+		}, function(data) {
+			if (data.success) {
+				var typeName = type+"Tab";
+				$("#"+ typeName).empty();
+				$.each(data.data, function() {
+					if(type == "image"){
+						var url = encodeURI('currentPath='+this.prePath+'&fileType='+this.fileType+'&fileName='+this.fileName);
+						$("#"+ typeName).append('<a href="file/openFile.action?'+url+'" data-lightbox="roadtrip" title="'+this.fileName+'"><img alt="'+this.fileName+'" style="margin: 10px" src="file/openFile.action?'+url+'" width="150" height="150"></a>')
+					}else{
+						
+					}
+				});
+			}
+		});
+		return false;
+	}
+	function openFile(obj) {
+		var fileType = $(obj).attr("filetype")
+		var fileName = $(obj).text();
+		if (fileType == "folder-open") {
+			var prePath = $(obj).attr("prePath");
+			var path = prePath + "\\" + fileName;
+			getFiles(path);
+			navPath(path, fileName); 
+		} else if(fileType.indexOf("image") >= 0){
+				var url = encodeURI('currentPath='+currentPath+'&fileType='+fileType+'&fileName='+fileName);
+				$(obj).attr({"href":"file/openFile.action?"+url,"data-lightbox":"test","data-title":fileName});
+				return true;
+		}
+		return false;
+	}
 
 </script>
 
@@ -493,7 +594,56 @@
 				<%@include file="main.jsp"%>
 			</div>
 		</div>
-
+ 
 	</div>
+<div id="shareTab" style="visibility:visible; display: none;"> 
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#shareTable" onclick="return changeShareTab(1)" aria-controls="home" role="tab" data-toggle="tab">公共链接</a></li>
+    <li role="presentation"><a href="#shareTable" onclick="return changeShareTab(2)" aria-controls="home" role="tab" data-toggle="tab">私密链接</a></li>
+    <li role="presentation"><a href="#officeTable" onclick="return changeShareTab(-1)" aria-controls="home" role="tab" data-toggle="tab">失效链接</a></li>
+  </ul>
+ 
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="shareTable">
+	    <div class="panel panel-default">
+		  <table class="table">
+    		<thead>
+    			<tr>
+    				<th width="40%">分享文件</th>
+    				<th width="25%">分享时间</th>
+    				<th width="35%">分享链接</th>
+    			</tr>
+    		</thead>
+    		<tbody>
+    			
+    		</tbody>
+    	</table>
+		</div>
+    </div>
+  </div>
+</div>
+<div id="fileTypeList" style="visibility:visible; display: none;"> 
+  <!-- Nav tabs --> 
+ <ul class="nav navbar-fixed-top nav-tabs"  role="tablist" style="background: white; margin-bottom: 40px; z-index: 0">
+   <li role="presentation" class="active"><a href="#imageTab" onclick="return changeTypeTab('image')" aria-controls="imageTab" role="tab" data-toggle="tab">图片</a></li>
+   <li role="presentation"><a href="#officeTab" onclick="return changeTypeTab('office')" aria-controls="officeTab" role="tab" data-toggle="tab">文档</a></li>
+   <li role="presentation"><a href="#vidoTab" onclick="return changeTypeTab('vido')" aria-controls="vidoTab" role="tab" data-toggle="tab">视频</a></li>
+   <li role="presentation"><a href="#audioTab" onclick="return changeTypeTab('audio')" aria-controls="audioTab" role="tab" data-toggle="tab">音乐</a></li>
+   <li role="presentation"><a href="#fileTab" onclick="return changeTypeTab('file')" aria-controls="fileTab" role="tab" data-toggle="tab">其他</a></li>
+ </ul>
+  
+ 
+  <!-- Tab panes -->
+  <div class="tab-content" style="margin-top: 45px;">
+    <div role="tabpanel" class="tab-pane active" id="imageTab">
+	</div>
+    <div role="tabpanel" class="tab-pane" id="officeTab"></div>
+    <div role="tabpanel" class="tab-pane" id="vidoTab"></div>
+    <div role="tabpanel" class="tab-pane" id="audioTab"></div>
+    <div role="tabpanel" class="tab-pane" id="fileTab">55555555555</div>
+  </div>
+</div>
 </body>
 </html>

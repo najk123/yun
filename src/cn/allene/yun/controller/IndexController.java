@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import cn.allene.yun.service.FileService;
 import cn.allene.yun.service.UserService;
+import cn.allene.yun.utils.UserUtils;
 
 @Controller
 public class IndexController {
@@ -16,7 +17,7 @@ public class IndexController {
 	
 	@RequestMapping("/index")
 	public String index(HttpServletRequest request){
-		String username = (String) request.getSession().getAttribute(FileService.NAMESPACE);
+		String username = UserUtils.getUsername(request);
 		String countSize = userService.getCountSize(username);
 		request.setAttribute("countSize", countSize);
 		return "index";

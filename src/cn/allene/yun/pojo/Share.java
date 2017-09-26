@@ -1,10 +1,29 @@
 package cn.allene.yun.pojo;
 
 public class Share {
+	public static final int PUBLIC = 1;
+	public static final int PRIVATE = 2;
+	public static final int EXPIRE = -1;
+	
 	private String shareUrl;
 	private String shareId;
 	private String shareUser;
 	private String path;
+	private String command;
+	private int status;
+	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getCommand() {
+		return command;
+	}
+	public void setCommand(String command) {
+		this.command = command;
+	}
 	public String getShareId() {
 		return shareId;
 	}

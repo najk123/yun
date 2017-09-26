@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import cn.allene.yun.pojo.User;
 import cn.allene.yun.service.FileService;
+import cn.allene.yun.utils.UserUtils;
 
 public class LoignInterceptor implements HandlerInterceptor {
 
@@ -29,7 +31,7 @@ public class LoignInterceptor implements HandlerInterceptor {
 			return true;
 		}
 
-		String username = (String) request.getSession().getAttribute(FileService.NAMESPACE);
+		String username = UserUtils.getUsername(request);
 
 		if (username != null) {
 			return true;

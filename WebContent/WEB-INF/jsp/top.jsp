@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 	<nav class="navbar navbar-default navbar-fixed-top"
-		style="background-color: #EFF4F8; margin-bottom: 0px; height: 10%">
+		style="background-color: #EFF4F8; margin-bottom: 0px; height: 10%; z-index: 50">
 	<div class="container">
 		<div class="navbar-header">
 			<span style="float: left;">

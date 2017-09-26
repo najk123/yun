@@ -28,7 +28,7 @@
 				style="width: 200px; float: right; margin-top: 10px; margin-right: 50px;">
 				<input type="text" class="form-control"
 					aria-label="Amount (to the nearest dollar)"> <span
-					class="input-group-addon glyphicon glyphicon-search"></span>
+					class="input-group-addon glyphicon glyphicon-search" onclick="searchFile(this)"></span>
 			</div>
 		</div>
 	</div>
@@ -45,7 +45,7 @@
 			<thead>
 				<tr>
 					<th><input id="checkAll" type="checkbox" aria-label="..."></th>
-					<th colspan="4" width="60%">文件名</th>
+					<th colspan="5" width="60%">文件名</th>
 					<th>大小</th>
 					<th>修改时间</th>
 				</tr> 

@@ -53,7 +53,7 @@
 					$.each(data.data, function() {
 						$("#list").append('<tr>'
 											+ '<td><input type="checkbox" onclick="selectCheckbox()" name="check_name" aria-label="..."></td>'
-											+ '<td><a href="#" prepath='+ currentPath +' isFile="'+ this.isFile+ '" onclick="return preDirectory(this)">'+ this.fileName+ '</a></td>'
+											+ '<td><a href="#" prepath='+ currentPath +' fileType="'+ this.fileType+ '" onclick="return preDirectory(this)"><span class="glyphicon glyphicon-'+ this.fileType +'" style="padding-right: 10px"></span>'+ this.fileName+ '</a></td>'
 											+ '<td width="32px"><a href="#" class="glyphicon glyphicon-download-alt" title="下载" onclick="return downloadFile(this)"></a></td>'
 											+ '<td>'+ this.fileSize+ '</td>'
 											+ '<td>'+ this.lastTime+ '</td>'
@@ -63,7 +63,7 @@
 		});
 	}
 	function preDirectory(obj) {
-		if ($(obj).attr("isfile") == "false") {
+		if ($(obj).attr("fileType") == "folder-open") {
 			var prePath = $(obj).attr("prepath");
 			var name = $(obj).text();
 			var path;
@@ -172,8 +172,8 @@
 						<c:forEach var="file" items="${files }">
 							<tr>
 								<td><input type="checkbox" name="check_name" onclick="selectCheckbox()" aria-label="..."></td>
-								<td><a href="#" isFile="${file.isFile }"
-									path="${file.path }" onclick="return preDirectory(this)">${file.fileName }</a></td>
+								<td><a href="#" fileType="${file.fileType }"
+									path="${file.path }" onclick="return preDirectory(this)"><span class="glyphicon glyphicon-${file.fileType }" style="padding-right: 10px"></span>${file.fileName }</a></td>
 								<td><a href="#"
 									class="glyphicon glyphicon-download-alt" onclick="downloadFile(this)" title="下载"></a></td>
 								<td>${file.fileSize }</td>

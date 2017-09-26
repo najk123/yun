@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,22 +14,27 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baidubce.BceClientConfiguration;
+import com.baidubce.auth.DefaultBceCredentials;
+import com.baidubce.services.doc.DocClient;
+
 import cn.allene.yun.dao.UserDao;
 import cn.allene.yun.pojo.FileCustom;
+import cn.allene.yun.pojo.User;
 import cn.allene.yun.pojo.summaryFile;
-import cn.allene.yun.pojo.Result;
 import cn.allene.yun.utils.FileUtils;
-import sun.security.util.Length;
+import cn.allene.yun.utils.UserUtils;
 
 @Service
 public class FileService {
 	public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
-	public static final String NAMESPACE = "username";
 	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source" };
 	@Autowired
 	private UserDao userDao;
@@ -111,7 +117,7 @@ public class FileService {
 		if (fileName == null) {
 			fileName = "";
 		}
-		String username = (String) request.getSession().getAttribute(NAMESPACE);
+		String username = UserUtils.getUsername(request);
 		return getRootPath(request) + username + File.separator + fileName;
 	}
 
@@ -135,15 +141,52 @@ public class FileService {
 				custom.setLastTime(FileUtils.formatTime(file.lastModified()));
 				if (file.isDirectory()) {
 					custom.setFileSize("-");
-					custom.setFile(false);
 				} else {
 					custom.setFileSize(FileUtils.getDataSize(file.length()));
-					custom.setFile(true);
 				}
+				custom.setFileType(FileUtils.getFileType(file));
 				lists.add(custom);
 			}
 		}
 		return lists;
+	}
+//
+//	public List<FileCustom> searchFile(HttpServletRequest request, String currentPath, String reg) {
+//		List<FileCustom> list = new ArrayList<>();
+//		matchFile(list, new File(getFileName(request, currentPath)), reg, "");
+//		return list;
+//	}
+	public List<FileCustom> searchFile(HttpServletRequest request, String currentPath, String reg, String regType) {
+		List<FileCustom> list = new ArrayList<>();
+		matchFile(request, list, new File(getFileName(request, currentPath)), reg, regType == null ? "" : regType);
+		return list;
+	}
+	private void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType) {
+		File[] listFiles = dirFile.listFiles();
+		if (listFiles != null) {
+			for (File file : listFiles) {
+				if (file.isFile()) {
+					String suffixType = FileUtils.getFileType(file);
+					if (suffixType.equals(regType) || (reg != null && file.getName().contains(reg))) {
+						FileCustom custom = new FileCustom();
+						custom.setFileName(file.getName());
+						custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+						String parentPath = file.getParent();
+						String prePath = parentPath.substring(parentPath.indexOf(getFileName(request, null)) + getFileName(request, null).length());
+						custom.setPrePath(File.separator + prePath);
+						if (file.isDirectory()) {
+							custom.setFileSize("-");
+						} else {
+							custom.setFileSize(FileUtils.getDataSize(file.length()));
+						}
+						custom.setFileType(FileUtils.getFileType(file));
+						list.add(custom);
+					}
+				} else {
+					matchFile(request, list, file, reg, regType);
+				}
+			}
+		}
 	}
 
 	public summaryFile summarylistFile(String realPath, int number) {
@@ -301,7 +344,7 @@ public class FileService {
 	}
 
 	public void reSize(HttpServletRequest request) {
-		String userName = (String) request.getSession().getAttribute(NAMESPACE);
+		String userName = UserUtils.getUsername(request);
 		try {
 			userDao.reSize(userName, countFileSize(request));
 		} catch (Exception e) {
@@ -309,4 +352,17 @@ public class FileService {
 
 		}
 	}
+
+	public void respFile(HttpServletResponse response, HttpServletRequest request, String currentPath, String fileName,
+			String type) throws IOException {
+		File file = new File(getFileName(request, currentPath), fileName);
+		InputStream inputStream = new FileInputStream(file);
+		IOUtils.copy(inputStream, response.getOutputStream());	
+	}
+//
+//	public static void main(String[] args) {
+//		BceClientConfiguration config = new BceClientConfiguration();
+//		config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID, SECRET_ACCESS_KEY));
+//		DocClient client = new DocClient(config);
+//	}
 }
