@@ -3,7 +3,8 @@ package cn.allene.yun.pojo;
 public class Share {
 	public static final int PUBLIC = 1;
 	public static final int PRIVATE = 2;
-	public static final int EXPIRE = -1;
+	public static final int CANCEL = 0;
+	public static final int DELETE = -1;
 	
 	private String shareUrl;
 	private String shareId;

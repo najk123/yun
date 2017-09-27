@@ -190,23 +190,24 @@
 	function delFile(){
 		var $del = $("input[name='check_name']:checked");
 		var checkName = new Array();
+		var check = new Array();
 		if($del.length < 1){
 			alert("请选择至少一个");
 		}else{
 			$.each($del,function(i,n){
-				check = $(this).attr("currentPath");
+				check[i] = $(this).attr("filePath");
 				checkName[i] = $(this).next().children('span').text();
 			});
 			$.ajax({
 				type:"POST",
 				url:"file/delRecycleDirectory.action",
 				data:{
-					"currentPath":check,
+					"filePath":check,
 					"directoryName":checkName
 				},
 				success:function(data){
 					layer.msg(data.msg);
-					setTimeout('window.location.reload()',2500);
+					window.location.reload()
 				},
 				traditional:true
 			});

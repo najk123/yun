@@ -72,6 +72,7 @@
 			}else{
 				path = prePath + "\\" + name;
 			}
+			alert(path);
 			getFiles(path);
 			navPath(path, name);
 		}
@@ -173,7 +174,7 @@
 							<tr>
 								<td><input type="checkbox" name="check_name" onclick="selectCheckbox()" aria-label="..."></td>
 								<td><a href="#" fileType="${file.fileType }"
-									path="${file.path }" onclick="return preDirectory(this)"><span class="glyphicon glyphicon-${file.fileType }" style="padding-right: 10px"></span>${file.fileName }</a></td>
+									path="${file.filePath }" onclick="return preDirectory(this)"><span class="glyphicon glyphicon-${file.fileType }" style="padding-right: 10px"></span>${file.fileName }</a></td>
 								<td><a href="#"
 									class="glyphicon glyphicon-download-alt" onclick="downloadFile(this)" title="下载"></a></td>
 								<td>${file.fileSize }</td>

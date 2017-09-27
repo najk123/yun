@@ -15,4 +15,6 @@ public interface ShareDao {
 
 	void shareFile(Share share) throws Exception;
 
+	void cancelShare(@Param("url") String url, @Param("filePath")  String filePath, @Param("status") int status) throws Exception;
+
 }

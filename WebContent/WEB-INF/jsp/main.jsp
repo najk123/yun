@@ -45,7 +45,7 @@
 			<thead>
 				<tr>
 					<th><input id="checkAll" type="checkbox" aria-label="..."></th>
-					<th colspan="5" width="60%">文件名</th>
+					<th colspan="4" width="60%">文件名</th>
 					<th>大小</th>
 					<th>修改时间</th>
 				</tr> 

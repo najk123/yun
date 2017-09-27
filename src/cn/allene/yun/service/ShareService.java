@@ -49,6 +49,7 @@ public class ShareService {
 				shareFile.setLastTime(FileUtils.formatTime(file.lastModified()));
 				shareFile.setShareUser(share.getShareUser());
 				shareFile.setUrl(share.getShareUrl());
+				shareFile.setFilePath(share.getPath());
 				files.add(shareFile);
 			}
 		}
@@ -65,5 +66,15 @@ public class ShareService {
 			shareDao.shareFile(share);
 		}
 		return shareUrl;
+	}
+
+	public String cancelShare(String url, String filePath, int status) throws Exception {
+		if(Share.CANCEL == status){
+			shareDao.cancelShare(url, filePath, Share.DELETE);
+			return "删除成功";
+		}else{
+			shareDao.cancelShare(url, filePath, Share.CANCEL);
+			return "取消成功";
+		}
 	}
 }

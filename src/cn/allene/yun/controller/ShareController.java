@@ -37,7 +37,7 @@ public class ShareController {
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Result<>(401, false, "获取失败");
+			return new Result<>(411, false, "获取失败");
 		}
 	}
 	@RequestMapping("/shareFile")
@@ -50,6 +50,17 @@ public class ShareController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new Result<>(401, false, "分享失败");
+		}
+	}
+	@RequestMapping("/cancelShare")
+	public @ResponseBody Result<String> cancelShare(String url, String filePath, int status){
+		try {
+			String msg = shareService.cancelShare(url, filePath, status);
+			Result<String> result = new Result<>(425, true, msg);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result<>(421, false, "取消失败");
 		}
 	}
 }

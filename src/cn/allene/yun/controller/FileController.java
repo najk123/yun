@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -156,11 +157,32 @@ public class FileController {
 		}
 	}
 	@RequestMapping("/openFile")
-	public void openFile(HttpServletResponse response,String currentPath, String fileName, String type){
+	public void openFile(HttpServletResponse response,String currentPath, String fileName, String fileType){
 		try {
-			fileService.respFile(response, request, currentPath, fileName, type);
+			fileService.respFile(response, request, currentPath, fileName, fileType);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	@RequestMapping("/openAudioPage")
+	public String openAudioPage(Model model, String currentPath, String fileName){
+		model.addAttribute("currentPath", currentPath);
+		model.addAttribute("fileName", fileName);
+		return "audio";
+	}
+	@RequestMapping("/openOffice")
+	public @ResponseBody Result<String> openOffice(String currentPath, String fileName, String fileType){
+		try {
+			String openOffice = fileService.openOffice(currentPath, fileName, fileType);
+			if(openOffice != null){
+				Result<String> result = new Result<>(505, true, "打开成功");
+				result.setData(openOffice);
+				return result;
+			}
+			return new Result<>(501, false, "打开失败");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result<>(501, false, "打开失败");
 		}
 	}
 	/*--存储回收站所有删除文件信息，并返回给recycle.jsp--*/
@@ -178,9 +200,9 @@ public class FileController {
 	/* --删除回收站文件--
 	 * --获取当前路径以及文件名--*/
 	@RequestMapping("/delRecycleDirectory")
-	public @ResponseBody Result<String> delRecycleDirectory(String currentPath,String[] directoryName){
+	public @ResponseBody Result<String> delRecycleDirectory(String filePath[] ,String[] directoryName){
 		try {
-			fileService.delRecycleDirectory(request, currentPath,directoryName);
+			fileService.delRecycleDirectory(request, filePath[0],directoryName);
 			return new Result<>(327, true, "删除成功");
 		} catch (Exception e) {
 			return new Result<>(322, false, "删除失败");

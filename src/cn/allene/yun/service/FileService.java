@@ -8,9 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -19,17 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.tomcat.util.buf.UEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.baidubce.BceClientConfiguration;
-import com.baidubce.auth.DefaultBceCredentials;
-import com.baidubce.services.doc.DocClient;
+import com.baidubce.services.doc.model.CreateDocumentResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cn.allene.yun.dao.OfficeDao;
 import cn.allene.yun.dao.UserDao;
 import cn.allene.yun.pojo.FileCustom;
+import cn.allene.yun.pojo.Result;
 import cn.allene.yun.pojo.User;
 import cn.allene.yun.pojo.summaryFile;
 import cn.allene.yun.utils.FileUtils;
@@ -38,7 +36,7 @@ import cn.allene.yun.utils.UserUtils;
 @Service
 public class FileService {
 	public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
-	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source" };
+	public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source", "image", User.RECYCLE};
 	/*--删除前路径--*/
 	public static String prePath = null;
 	@Autowired
@@ -51,8 +49,20 @@ public class FileService {
 	
 	public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception {
 		for (MultipartFile file : files) {
+			String fileName = file.getOriginalFilename();
 			String filePath = getFileName(request, currentPath);
-			file.transferTo(new File(filePath, file.getOriginalFilename()));
+			File distFile = new File(filePath, fileName);
+			if(!distFile.exists()){
+				file.transferTo(distFile);
+				if("office".equals(FileUtils.getFileType(distFile))){
+					try {
+//						String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+//						String documentId = FileUtils.getDocClient().createDocument(distFile, fileName, suffix).getDocumentId();
+						officeDao.addOffice("doc-hi2m3psn08i4smn", currentPath + File.separator + fileName);
+					} catch (Exception e) {
+					}
+				}
+			}
 		}
 		reSize(request);
 	}
@@ -70,14 +80,14 @@ public class FileService {
 			currentPath = "";
 		}
 		if (fileNames.length == 1) {
-			downloadFile = new File(getFileName(request, currentPath, username) + fileNames[0]);
+			downloadFile = new File(getFileName(request, currentPath, username), fileNames[0]);
 			if (downloadFile.isFile()) {
 				return downloadFile;
 			}
 		}
 		String[] sourcePath = new String[fileNames.length];
 		for (int i = 0; i < fileNames.length; i++) {
-			sourcePath[i] = getFileName(request, fileNames[i], username);
+			sourcePath[i] = getFileName(request, currentPath, username) + File.separator + fileNames[i];
 		}
 		String packageZipName = packageZip(sourcePath);
 		downloadFile = new File(packageZipName);
@@ -86,11 +96,17 @@ public class FileService {
 
 	private String packageZip(String[] sourcePath) throws Exception {
 		String zipName = sourcePath[0] + (sourcePath.length == 1 ? "" : "等" + sourcePath.length + "个文件") + ".zip";
-		ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipName));
-		for (String string : sourcePath) {
-			writeZos(new File(string), "", zos);
+		ZipOutputStream zos = null;
+		try {
+			zos = new ZipOutputStream(new FileOutputStream(zipName));
+			for (String string : sourcePath) {
+				writeZos(new File(string), "", zos);
+			}
+		} finally {
+			if(zos != null){
+				zos.close();
+			}
 		}
-		zos.close();
 		return zipName;
 	}
 
@@ -146,19 +162,21 @@ public class FileService {
 		List<FileCustom> lists = new ArrayList<FileCustom>();
 		if (files != null) {
 			for (File file : files) {
-				FileCustom custom = new FileCustom();
-				custom.setFileName(file.getName());
-				custom.setLastTime(FileUtils.formatTime(file.lastModified()));
-				/*保存文件的删除前路径以及当前路径*/
-				custom.setFilePath(prePath);
-				custom.setCurrentPath(realPath);
-				if (file.isDirectory()) {
-					custom.setFileSize("-");
-				} else {
-					custom.setFileSize(FileUtils.getDataSize(file.length()));
+				if(!file.getName().equals(User.RECYCLE)){
+					FileCustom custom = new FileCustom();
+					custom.setFileName(file.getName());
+					custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+					/*保存文件的删除前路径以及当前路径*/
+					custom.setFilePath(prePath);
+					custom.setCurrentPath(realPath);
+					if (file.isDirectory()) {
+						custom.setFileSize("-");
+					} else {
+						custom.setFileSize(FileUtils.getDataSize(file.length()));
+					}
+					custom.setFileType(FileUtils.getFileType(file));
+					lists.add(custom);
 				}
-				custom.setFileType(FileUtils.getFileType(file));
-				lists.add(custom);
 			}
 		}
 		return lists;
@@ -376,11 +394,20 @@ public class FileService {
 
 		}
 	}
-
-	public void respFile(HttpServletResponse response, HttpServletRequest request, String currentPath, String fileName,
-			String type) throws IOException {
+	@Autowired
+	private OfficeDao officeDao;
+	public void respFile(HttpServletResponse response, HttpServletRequest request, String currentPath, String fileName, String type) throws IOException {
 		File file = new File(getFileName(request, currentPath), fileName);
 		InputStream inputStream = new FileInputStream(file);
-		IOUtils.copy(inputStream, response.getOutputStream());	
+		if("docum".equals(type)){
+			response.setCharacterEncoding("UTF-8");
+			IOUtils.copy(inputStream, response.getWriter(), "UTF-8");
+		}else{
+			IOUtils.copy(inputStream, response.getOutputStream());
+		}
+	}
+
+	public String openOffice(String currentPath, String fileName, String fileType) throws Exception {
+		return officeDao.getOfficeId(currentPath + File.separator + fileName);
 	}
 }

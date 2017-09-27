@@ -400,7 +400,13 @@ var currentPath;
 			  if(data.success){
 				  $("#shareTable tbody").empty();
 				  $.each(data.data, function(){
-					    $("#shareTable tbody").append('<tr><td><span class="glyphicon glyphicon-'+this.fileType+'" style="margin-right: 10px"></span>'+this.fileName+'</td><td>'+this.lastTime+'</td><td><input id="url" onFocus="copyUrl(this)" value="' + joinUrl(this.url) + '" class="form-control" readonly="readonly"/></td></tr>');
+					  var opreate = '<button type="button" url="'+this.url+'" filePath="'+this.filePath+'" order="'+order+'" onclick="cancelShare(this)" ';
+					  if(order == "0"){
+						  opreate += 'class="btn btn-danger">删除</button>';
+					  }else{
+						  opreate += 'class="btn btn-warning">取消</button>';
+					  }
+					  $("#shareTable tbody").append('<tr><td><span class="glyphicon glyphicon-'+this.fileType+'" style="margin-right: 10px"></span>'+this.fileName+'</td><td>'+this.lastTime+'</td><td><input id="url" onFocus="copyUrl(this)" title="' + joinUrl(this.url) + '" value="' + joinUrl(this.url) + '" class="form-control" readonly="readonly"/></td><td>'+opreate+'</td></tr>');
 				  });
 				   
 			  }
@@ -408,6 +414,21 @@ var currentPath;
 					
 		);
 		return false;
+	}
+	function cancelShare(obj){
+		var url = $(obj).attr("url");
+		var filePath = $(obj).attr("filePath");
+		var status = $(obj).attr("order");
+		$.post("cancelShare.action",{
+			"url":url,
+			"filePath":filePath,
+			"status":status
+		},function(data){
+			layer.msg(data.msg);
+			if(data.success){
+				changeShareTab(status);
+			}
+		});
 	}
 	function searchFileType(type){
 		var tabName = type + "Tab";
@@ -429,15 +450,18 @@ var currentPath;
 		}, function(data) {
 			if (data.success) {
 				var typeName = type+"Tab";
-				$("#"+ typeName).empty();
-				$.each(data.data, function() {
-					if(type == "image"){
+				if(type == "image"){
+					$("#"+ typeName).empty();
+					$.each(data.data, function() {
 						var url = encodeURI('currentPath='+this.currentPath+'&fileType='+this.fileType+'&fileName='+this.fileName);
 						$("#"+ typeName).append('<a href="file/openFile.action?'+url+'" data-lightbox="roadtrip" title="'+this.fileName+'"><img alt="'+this.fileName+'" style="margin: 10px" src="file/openFile.action?'+url+'" width="150" height="150"></a>')
-					}else{
-						
-					}
-				});
+					});
+				}else{
+					$("#"+ typeName + " tbody").empty();
+					$.each(data.data, function() {
+						$("#"+ typeName + " tbody").append('<tr><td><a href="#" onclick="return openFile(this)" filetype="'+this.fileType+'" currentPath="'+this.currentPath+'"><span class="glyphicon glyphicon-'+this.fileType+'" style="margin-right: 10px"></span>'+this.fileName+'</a></td><td>'+this.fileSize+'</td><td>'+this.lastTime+'</td></tr>');
+					});
+				}
 			}
 		});
 		return false;
@@ -445,15 +469,88 @@ var currentPath;
 	function openFile(obj) {
 		var fileType = $(obj).attr("filetype")
 		var fileName = $(obj).text();
+		var parentPath = $(obj).attr("currentPath") == null ? currentPath : $(obj).attr("currentPath");
+		var url = encodeURI('currentPath='+parentPath+'&fileType='+fileType+'&fileName='+fileName);
 		if (fileType == "folder-open") {
 			var prePath = $(obj).attr("prePath");
 			var path = prePath + "\\" + fileName;
 			getFiles(path);
 			navPath(path, fileName); 
 		} else if(fileType.indexOf("image") >= 0){
-				var url = encodeURI('currentPath='+currentPath+'&fileType='+fileType+'&fileName='+fileName);
-				$(obj).attr({"href":"file/openFile.action?"+url,"data-lightbox":"test","data-title":fileName});
-				return true;
+			$(obj).attr({"href":"file/openFile.action?"+url,"data-lightbox":"test","data-title":fileName});
+			return true;
+		} else if(fileType.indexOf("office") >= 0){
+			$.post("file/openOffice.action", {
+				"currentPath" : parentPath,
+				"fileType" : fileType,
+				"fileName" : fileName,
+			}, function(data){
+				if(data.success){
+					openOffice(data.data);
+				}else{
+					layer.msg(data.msg);
+				}
+			});
+		} else if(fileType.indexOf("audio") >= 0){
+			layer.open({
+				type:2,
+				title:'播放',
+				content:'file/openAudioPage.action?' + url,
+				shade: [0],
+				area: ['440px', '120px'],
+				offset: 'rb', //右下角弹出
+			});
+		} else if(fileType.indexOf("docum") >= 0){
+			$.post("file/openFile.action", {
+				"currentPath" : parentPath,
+				"fileType" : fileType,
+				"fileName" : fileName,
+			}, function(data){
+				layer.open({ 
+					  type: 1, 
+					  area: ['720px', '600px'],
+					  title:false,
+					  scrollbar: false,
+					  content: '<textarea rows="50" cols="150">'+data+'</textarea>'
+					});
+			});
 		}
 		return false;
+	}
+	
+	function openOffice(id){
+		layer.open({ 
+			  type: 1, 
+			  zIndex : 80,
+			  area: ['auto','600px'],
+			  offset: '10px',
+			  title:false,
+			  content: '<div id="officeContent"></div>'
+			});
+		    var option = {
+		        docId: id,
+		        token: 'TOKEN',
+		        host: 'BCEDOC',
+		        serverHost: 'http://doc.bj.baidubce.com',
+		        width: 600, //文档容器宽度
+//		        zoom: false,              //是否显示放大缩小按钮
+		        ready: function (handler) {  // 设置字体大小和颜色, 背景颜色（可设置白天黑夜模式）
+		            handler.setFontSize(1);
+		            handler.setBackgroundColor('#000');
+		            handler.setFontColor('#fff');
+		        },
+		        flip: function (data) {    // 翻页时回调函数, 可供客户进行统计等
+		            console.log(data.pn);
+		        },
+		        fontSize:'big',
+		        toolbarConf: {
+		                zoom: false,
+		        		page: false, //上下翻页箭头图标
+		                pagenum: false, //几分之几页
+		                full: false, //是否显示全屏图标,点击后全屏
+		                copy: true, //是否可以复制文档内容
+		                position: 'center',// 设置 toolbar中翻页和放大图标的位置(值有left/center)
+		        } //文档顶部工具条配置对象,必选
+		    };
+		    new Document('officeContent', option);
 	}

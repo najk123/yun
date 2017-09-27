@@ -8,6 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.print.Doc;
+
+import com.baidubce.BceClientConfiguration;
+import com.baidubce.auth.DefaultBceCredentials;
+import com.baidubce.services.doc.DocClient;
+
 public class FileUtils {
 	public static String getDataSize(long size) {
 		DecimalFormat formater = new DecimalFormat("####.0");
@@ -106,5 +112,16 @@ public class FileUtils {
 		String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
 		String fileType = FILE_TYPE_MAP.get(suffix);
 		return fileType == null ? "file" : fileType;
+	}
+	private static DocClient docClient = null;
+	public static DocClient getDocClient(){
+		if(docClient == null){
+			BceClientConfiguration config = new BceClientConfiguration();
+			config.setConnectionTimeoutInMillis(3000);
+			config.setSocketTimeoutInMillis(2000);
+		    config.setCredentials(new DefaultBceCredentials("3f87852806b2406dad987f9139120c6e", "8d8e5fb70309411b8ad9a055fda6922b"));
+		    docClient = new DocClient(config);
+		}
+	    return docClient;
 	}
 }
