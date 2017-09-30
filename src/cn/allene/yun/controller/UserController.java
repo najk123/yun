@@ -25,7 +25,7 @@ public class UserController {
 		User exsitUser = userService.findUser(user);
 		if(exsitUser != null){
 			HttpSession session = request.getSession();
-			session.setAttribute(FileService.NAMESPACE, exsitUser.getUsername());
+			session.setAttribute(User.NAMESPACE, exsitUser.getUsername());
 			session.setAttribute("totalSize", exsitUser.getTotalSize());
 			return "redirect:/index.action";
 		}else{
@@ -47,5 +47,10 @@ public class UserController {
 				return "regist";
 			}
 		}
+	}
+	@RequestMapping("/logout")
+	public String logout(HttpServletRequest request){
+		request.getSession().invalidate();
+		return "redirect:/user/login.action";
 	}
 }

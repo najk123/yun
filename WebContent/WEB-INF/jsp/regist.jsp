@@ -26,11 +26,8 @@
 <body>
 	<!--header开始-->
 	<div class="header">
-		<div>
-			<a href="#" class="baidu"></a>
-		</div>
 		<div class="logo">
-			<a href="#" class="logo">注册百度账号</a>
+			<a href="user/regist.action" class="logo">注册账号</a>
 		</div>
 		<div class="login">
 			<span>我已注册，现在就</span> <a href="user/login.action" class="login_icon">登录</a>
@@ -44,7 +41,7 @@
 		<div class="reg">
 			<form action="user/regist.action" method="post">
 				<dl>
-					<dt>用户名</dt>
+					<dt>用户名</dt> 
 					<dd class="ipt_box">
 						<input id="usr" name="username" type="text" placeholder="请设置用户名" /> <span
 							class="clear"></span>
@@ -53,33 +50,6 @@
 						<div class="tip">
 							设置后不可更改<br>中英文均可，最长14个英文或7个汉字
 						</div>
-						<div class="error">
-							<span class="error_icon"></span> <span></span>
-						</div>
-					</dd>
-				</dl>
-
-				<dl>
-					<dt>手机号</dt>
-					<dd class="ipt_box">
-						<input id="tel" name="tel" type="text" placeholder="可用于登录和找回密码" />
-						<span class="clear"></span>
-					</dd>
-					<dd class="mes">
-						<div class="tip">请输入中国大陆手机号,其他用户不可见</div>
-						<div class="error">
-							<span class="error_icon"></span> <span></span>
-						</div>
-					</dd>
-				</dl>
-
-				<dl>
-					<dt>验证码</dt>
-					<dd class="ipt_box">
-						<input id="yzm" name="yzm" type="text" placeholder="请输入验证码" /> <span
-							class="clear"></span>
-					</dd>
-					<dd class="mes">
 						<div class="error">
 							<span class="error_icon"></span> <span></span>
 						</div>
@@ -128,16 +98,16 @@
 			</form>
 		</div>
 
-		<div class="right">
-			<h3 class="phoneReg">手机快速注册</h3>
-			<div>
-				<p class="p1">请使用中国大陆手机号，编辑短信：</p>
-				<p class="p2">6-14位字符（支持数字/字母/符号）</p>
-				<p class="p1">作为登录密码，发送至：</p>
-				<p class="p2">0000 00000 00000</p>
-				<p class="p3">即可注册成功，手机号即为登录帐号。</p>
-			</div>
-		</div>
+<!-- 		<div class="right"> -->
+<!-- 			<h3 class="phoneReg">手机快速注册</h3> -->
+<!-- 			<div> -->
+<!-- 				<p class="p1">请使用中国大陆手机号，编辑短信：</p> -->
+<!-- 				<p class="p2">6-14位字符（支持数字/字母/符号）</p> -->
+<!-- 				<p class="p1">作为登录密码，发送至：</p> -->
+<!-- 				<p class="p2">0000 00000 00000</p> -->
+<!-- 				<p class="p3">即可注册成功，手机号即为登录帐号。</p> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 	</div>
 	<!--content结束-->
 

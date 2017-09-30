@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import cn.allene.yun.pojo.User;
 import cn.allene.yun.service.FileService;
+import cn.allene.yun.utils.UserUtils;
 
 public class LoignInterceptor implements HandlerInterceptor {
 
@@ -25,11 +27,11 @@ public class LoignInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object) throws Exception {
 		String url = request.getRequestURI();
-		if (url.indexOf("login.action") >= 0 || url.indexOf("regist.action") >= 0) {
+		if (url.indexOf("login.action") >= 0 || url.indexOf("regist.action") >= 0 || url.indexOf("share.action") >= 0 || url.indexOf("getShareFiles.action") >= 0 || url.indexOf("download.action") >= 0) {
 			return true;
 		}
 
-		String username = (String) request.getSession().getAttribute(FileService.NAMESPACE);
+		String username = UserUtils.getUsername(request);
 
 		if (username != null) {
 			return true;

@@ -3,20 +3,34 @@ package cn.allene.yun.pojo;
 
 public class FileCustom {
 	private String fileName;
-	private boolean isFile;
+	private String fileType;
 	private String fileSize;
 	private String lastTime;
+	private String filePath;
+	private String currentPath;
+	public String getCurrentPath() {
+		return currentPath;
+	}
+	public void setCurrentPath(String currentPath) {
+		this.currentPath = currentPath;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 	public String getFileName() {
 		return fileName;
 	}
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	public boolean isFile() {
-		return isFile;
+	public String getFileType() {
+		return fileType;
 	}
-	public void setFile(boolean isFile) {
-		this.isFile = isFile;
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
 	}
 	public String getFileSize() {
 		return fileSize;

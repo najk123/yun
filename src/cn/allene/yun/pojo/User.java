@@ -1,6 +1,9 @@
 package cn.allene.yun.pojo;
 
 public class User {
+	public static final String NAMESPACE = "username";
+	
+	public static final String RECYCLE = "recycle";
 	private Integer id;
 	private String username;
 	private String password;
