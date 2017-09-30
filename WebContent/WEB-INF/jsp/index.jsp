@@ -26,6 +26,7 @@
 <script src="${pageContext.request.contextPath }/js/lightbox.js"></script>
 <script src="${pageContext.request.contextPath }/js/bootstrap.min.js"></script>
 <script src="${pageContext.request.contextPath }/js/layer.js"></script>
+<script src="${pageContext.request.contextPath }/js/ckplayer/ckplayer.js"></script>
 <script src="http://static.bcedocument.com/reader/v2/doc_reader_v2.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/js/index.js"></script>
 </head>

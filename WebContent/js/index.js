@@ -508,12 +508,29 @@ var currentPath;
 			}, function(data){
 				layer.open({ 
 					  type: 1, 
-					  area: ['720px', '600px'],
+					  area: ['720px', '570px'],
 					  title:false,
 					  scrollbar: false,
 					  content: '<textarea rows="50" cols="150">'+data+'</textarea>'
 					});
 			});
+		} else if(fileType.indexOf("vido") >= 0){
+			layer.open({ 
+				  type: 1, 
+				  area: ['480px', '400px'],
+				  title:false,
+				  content: '<div id="a1"></div>'
+				});
+			var flashvars={
+			        f:'file/openFile.action?' + url,
+//					f:'http://movie.ks.js.cn/flv/other/1_0.flv',
+			        c:0,
+			        p:1,
+			        b:1
+		    };
+		    var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:'transparent'};
+		    CKobject.embedSWF('js/ckplayer/ckplayer.swf','a1','ckplayer_a1','480','400',flashvars,params);
+		    return false;
 		}
 		return false;
 	}
