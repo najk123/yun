@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -336,6 +338,40 @@ public class FileService {
 		}
 	}
 
+	public void copyDirectory(HttpServletRequest request, String currentPath, String[] directoryName,
+			String targetdirectorypath) throws Exception {
+		// TODO Auto-generated method stub
+		for (String srcName : directoryName) {
+			File srcFile = new File(getFileName(request, currentPath), srcName);
+			File targetFile = new File(getFileName(request, targetdirectorypath), srcName);
+			/* 处理目标目录中存在同名文件或文件夹问题 */
+			String srcname = srcName;
+			String prefixname = "";
+			String targetname = "" ;
+			if(targetFile.exists()){
+				String[] srcnamesplit = srcname.split("\\)");
+				if(srcnamesplit.length > 1){
+					String intstring = srcnamesplit[0].substring(1);
+					Pattern pattern = Pattern.compile("[0-9]*"); 
+					Matcher isNum = pattern.matcher(intstring);
+					if(isNum.matches()){
+						srcname = srcname.substring(srcnamesplit[0].length()+1);
+					}
+				}
+				for(int i = 1; true ; i++){
+					prefixname = "(" + i + ")";
+					targetname = prefixname + srcname ;
+					targetFile = new File(targetFile.getParent(), targetname);
+					if(!targetFile.exists()){
+						break;
+					}
+				}
+				targetFile = new File(targetFile.getParent(), targetname);
+			}
+			/* 复制 */
+			copyfile(srcFile, targetFile);
+		}
+	}
 	public void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,
 			String targetdirectorypath) throws Exception {
 		// TODO Auto-generated method stub
@@ -343,19 +379,28 @@ public class FileService {
 			File srcFile = new File(getFileName(request, currentPath), srcName);
 			File targetFile = new File(getFileName(request, targetdirectorypath), srcName);
 			/* 处理目标目录中存在同名文件或文件夹问题 */
-			if (srcFile.isDirectory()) {
-				if (targetFile.exists()) {
-					for (int i = 1; !targetFile.mkdir(); i++) {
-						targetFile = new File(targetFile.getParentFile(), srcName + "(" + i + ")");
+			String srcname = srcName;
+			String prefixname = "";
+			String targetname = "" ;
+			if(targetFile.exists()){
+				String[] srcnamesplit = srcname.split("\\)");
+				if(srcnamesplit.length > 1){
+					String intstring = srcnamesplit[0].substring(1);
+					Pattern pattern = Pattern.compile("[0-9]*"); 
+					Matcher isNum = pattern.matcher(intstring);
+					if(isNum.matches()){
+						srcname = srcname.substring(srcnamesplit[0].length()+1);
 					}
-					;
 				}
-			} else {
-				if (targetFile.exists()) {
-					for (int i = 1; !targetFile.createNewFile(); i++) {
-						targetFile = new File(targetFile.getParentFile(), srcName + "(" + i + ")");
+				for(int i = 1; true ; i++){
+					prefixname = "(" + i + ")";
+					targetname = prefixname + srcname ;
+					targetFile = new File(targetFile.getParent(), targetname);
+					if(!targetFile.exists()){
+						break;
 					}
 				}
+				targetFile = new File(targetFile.getParent(), targetname);
 			}
 
 			/* 移动即先复制，再删除 */
