@@ -118,16 +118,6 @@ public class FileController {
 		}
 	}
 	
-	@RequestMapping("/copyDirectory")
-	public @ResponseBody Result<String> copyDirectory(String currentPath, String[] directoryName, String targetdirectorypath) throws Exception{
-		
-		try {
-			fileService.copyDirectory(request,currentPath, directoryName, targetdirectorypath);
-			return new Result<>(366, true, "复制成功");
-		} catch (IOException e) {
-			return new Result<>(361, true, "复制失败");
-		}
-	}
 	@RequestMapping("/moveDirectory")
 	public @ResponseBody Result<String> moveDirectory(String currentPath, String[] directoryName, String targetdirectorypath) throws Exception{
 		

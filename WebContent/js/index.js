@@ -280,63 +280,6 @@ var currentPath;
 	//其他功能
 	//测试
 
-	/* 复制文件及文件夹 */
-	function copyto(){
-		var $id = $("input:checked");
-		var cancopy = "yes";
-		var check = new Array();
-		var targetdirectorypath = "";
-		if($id.length<1){
-			alert("请选择需要移动的文件");
-		}else{
-			layer.open({
-				type: 2,			//0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
-				tilte: '移动到',
-				area: ['500px', '300px'],
-				shade: 0.6,			//遮罩透明度，默认：0.3
-				shadeclose: false,	//控制点击弹层外区域关闭，默认：false
-				fixed: false, 		//鼠标滚动时，层是否固定在可视区域，默认：true
-				maxmin: false,		//是否允许全屏最小化，默认：false
-				resize: false,		//是否允许拉伸，默认：true
-				anim: 0,				//0-6的动画形式，-1不开启，默认0
-				scrollbar: true,		//是否允许浏览器出现滚动条，默认：true
-				move: false,			//触发拖动的元素，默认是触发标题区域拖拽
-				closeBtn: 0,			//提供了两种风格的关闭按钮，可通过配置1和2来展示,如果不显示，则closeBtn: 0，默认：1
-				content: 'file/summarylist.action',
-				btn: ['确定', '取消'],
-				yes: function(index,layero){
-					var tree = layer.getChildFrame('.chooseup > .path',index);
-					targetdirectorypath = tree.html();
-// 							alert(targetdirectorypath + "---" + currentPath);
-// 								\\music  music
-// 								\music\aaa  music\aaa
-					$.each($id.parent().next().children(), function(i, n) {
-						check[i] = $(this).text();
-					});
-					if(cancopy == "yes"){
-						$.ajax({
-							type : "POST",
-							url : "file/copyDirectory.action",
-							data : {
-								"currentPath" : currentPath,
-								"directoryName" : check,
-								"targetdirectorypath" : targetdirectorypath
-							},
-							success : function(data) {
-								layer.msg(data.msg);
-								getFiles(currentPath);
-							},
-							traditional : true
-						});
-						layer.close(index);
-					}
-				},
-				btn2: function(index,layero){
-					layer.close(index);}
-			});
-		}
-		return false;
-	}
 	/* 移动文件及文件夹 */
 	function moveto(){
 		var $id = $("input:checked");
